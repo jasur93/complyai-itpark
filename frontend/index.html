@@ -61,6 +61,7 @@
             const [isAnalyzing, setIsAnalyzing] = useState(false);
             const [selectedAnalysis, setSelectedAnalysis] = useState(null);
             const [showTripForm, setShowTripForm] = useState(false);
+            const [selectedPlan, setSelectedPlan] = useState(null);
             const [tripForm, setTripForm] = useState({
                 destination: '',
                 purpose: '',
@@ -460,9 +461,42 @@
             };
 
             const downloadOfficialForm = () => {
-                // Simulate downloading official IT Park form
+                // Create a sample PDF-like content for demo
+                const formContent = `
+IT PARK BUSINESS TRIP REPORT FORM
+
+Employee Name: ________________
+Department: ___________________
+Trip Destination: ______________
+Trip Purpose: __________________
+Start Date: ____________________
+End Date: ______________________
+
+EXPENSES:
+1. Transportation: $____________
+2. Accommodation: $____________
+3. Meals: $____________________
+4. Other: ______________________
+
+Total Amount: $_________________
+
+Employee Signature: ____________
+Manager Approval: ______________
+Date: __________________________
+                `;
+
+                // Create and download a text file (simulating PDF download)
+                const blob = new Blob([formContent], { type: 'text/plain' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'IT_Park_Business_Trip_Form.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+
                 addNotification('success', 'Official IT Park business trip form downloaded successfully');
-                // In real implementation, this would download an actual PDF form
             };
 
             const clearTripReports = () => {
@@ -489,6 +523,11 @@
                 // Navigate to dashboard to show demo
                 setCurrentView('dashboard');
                 addNotification('info', 'Welcome to ComplyAI Demo! Explore all features.');
+            };
+
+            const selectPlan = (planName, price) => {
+                setSelectedPlan({ name: planName, price: price });
+                addNotification('success', `${planName} plan selected! Price: $${price}/month. Contact us to get started.`);
             };
 
             if (currentView === 'landing') {
@@ -673,25 +712,43 @@
                         {/* Pricing Tiers */}
                         <div className="mb-16">
                             <div className="grid md:grid-cols-3 gap-8">
-                                <div className="bg-slate-800/30 p-8 rounded-xl border border-slate-700 text-center">
+                                <div className={`p-8 rounded-xl border text-center transition-all duration-300 ${
+                                    selectedPlan?.name === 'Small Business'
+                                        ? 'bg-blue-500/20 border-blue-500 transform scale-105'
+                                        : 'bg-slate-800/30 border-slate-700 hover:border-blue-500'
+                                }`}>
                                     <h4 className="text-xl font-semibold mb-4 text-blue-400">{t.smallBusiness}</h4>
                                     <div className="text-4xl font-bold mb-4">$15<span className="text-lg text-gray-400">/month</span></div>
-                                    <ul className="text-left space-y-2 text-gray-300">
+                                    <ul className="text-left space-y-2 text-gray-300 mb-6">
                                         <li>✅ Basic AI Analysis</li>
                                         <li>✅ Trip Report Processing</li>
                                         <li>✅ Up to 50 documents/month</li>
                                         <li>✅ Email Support</li>
                                         <li>✅ Standard Templates</li>
                                     </ul>
+                                    <button
+                                        onClick={() => selectPlan('Small Business', 15)}
+                                        className={`w-full py-3 px-6 rounded-lg font-semibold transition-colors ${
+                                            selectedPlan?.name === 'Small Business'
+                                                ? 'bg-blue-500 text-white'
+                                                : 'bg-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white'
+                                        }`}
+                                    >
+                                        {selectedPlan?.name === 'Small Business' ? '✓ Selected' : 'Select Plan'}
+                                    </button>
                                 </div>
 
-                                <div className="bg-emerald-500/10 p-8 rounded-xl border border-emerald-500 text-center relative">
+                                <div className={`p-8 rounded-xl border text-center relative transition-all duration-300 ${
+                                    selectedPlan?.name === 'Medium Business'
+                                        ? 'bg-emerald-500/30 border-emerald-400 transform scale-105'
+                                        : 'bg-emerald-500/10 border-emerald-500 hover:bg-emerald-500/20'
+                                }`}>
                                     <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-emerald-500 text-white px-4 py-1 rounded-full text-sm">
                                         Most Popular
                                     </div>
                                     <h4 className="text-xl font-semibold mb-4 text-emerald-400">{t.mediumBusiness}</h4>
                                     <div className="text-4xl font-bold mb-4">$35<span className="text-lg text-gray-400">/month</span></div>
-                                    <ul className="text-left space-y-2 text-gray-300">
+                                    <ul className="text-left space-y-2 text-gray-300 mb-6">
                                         <li>✅ Advanced AI Analysis</li>
                                         <li>✅ Unlimited Documents</li>
                                         <li>✅ E-Signature Integration</li>
@@ -699,12 +756,26 @@
                                         <li>✅ Priority Support</li>
                                         <li>✅ Multi-user Access</li>
                                     </ul>
+                                    <button
+                                        onClick={() => selectPlan('Medium Business', 35)}
+                                        className={`w-full py-3 px-6 rounded-lg font-semibold transition-colors ${
+                                            selectedPlan?.name === 'Medium Business'
+                                                ? 'bg-emerald-500 text-white'
+                                                : 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white'
+                                        }`}
+                                    >
+                                        {selectedPlan?.name === 'Medium Business' ? '✓ Selected' : 'Select Plan'}
+                                    </button>
                                 </div>
 
-                                <div className="bg-slate-800/30 p-8 rounded-xl border border-slate-700 text-center">
+                                <div className={`p-8 rounded-xl border text-center transition-all duration-300 ${
+                                    selectedPlan?.name === 'Large Business'
+                                        ? 'bg-purple-500/20 border-purple-500 transform scale-105'
+                                        : 'bg-slate-800/30 border-slate-700 hover:border-purple-500'
+                                }`}>
                                     <h4 className="text-xl font-semibold mb-4 text-purple-400">{t.largeBusiness}</h4>
                                     <div className="text-4xl font-bold mb-4">$75<span className="text-lg text-gray-400">/month</span></div>
-                                    <ul className="text-left space-y-2 text-gray-300">
+                                    <ul className="text-left space-y-2 text-gray-300 mb-6">
                                         <li>✅ Enterprise AI Features</li>
                                         <li>✅ API Access</li>
                                         <li>✅ Custom Integrations</li>
@@ -712,6 +783,16 @@
                                         <li>✅ Training & Consulting</li>
                                         <li>✅ White-label Options</li>
                                     </ul>
+                                    <button
+                                        onClick={() => selectPlan('Large Business', 75)}
+                                        className={`w-full py-3 px-6 rounded-lg font-semibold transition-colors ${
+                                            selectedPlan?.name === 'Large Business'
+                                                ? 'bg-purple-500 text-white'
+                                                : 'bg-purple-500/20 text-purple-400 hover:bg-purple-500 hover:text-white'
+                                        }`}
+                                    >
+                                        {selectedPlan?.name === 'Large Business' ? '✓ Selected' : 'Select Plan'}
+                                    </button>
                                 </div>
                             </div>
                         </div>
