@@ -583,6 +583,7 @@ Date: __________________________
             };
 
             const viewTrendAnalysis = () => {
+                console.log('viewTrendAnalysis clicked');
                 addNotification('info', 'Trend Analysis: Detailed revenue patterns and seasonal forecasts available in full report');
             };
 
@@ -603,6 +604,7 @@ Date: __________________________
             };
 
             const addAuditorCriterion = () => {
+                console.log('addAuditorCriterion clicked', newCriterion);
                 if (!newCriterion.name || !newCriterion.description) {
                     addNotification('error', 'Please fill in both criterion name and description');
                     return;
