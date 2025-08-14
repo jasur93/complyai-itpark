@@ -305,13 +305,18 @@
 
             const addNotification = (type, message) => {
                 const newNotification = {
-                    id: notifications.length + 1,
+                    id: Date.now(),
                     type,
                     message,
                     priority: type === 'violation' ? 'high' : type === 'deadline' ? 'medium' : 'low',
                     time: 'Just now'
                 };
-                setNotifications([newNotification, ...notifications]);
+                setNotifications([newNotification, ...notifications.slice(0, 4)]);
+
+                // Auto-remove notification after 4 seconds (no alerts)
+                setTimeout(() => {
+                    setNotifications(prev => prev.filter(n => n.id !== newNotification.id));
+                }, 4000);
             };
 
             const sendChatMessage = () => {
