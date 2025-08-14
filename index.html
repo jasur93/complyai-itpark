@@ -31,10 +31,168 @@
 
         const ComplyAI = () => {
             const [currentView, setCurrentView] = useState('landing');
+            const [uploadedDocuments, setUploadedDocuments] = useState([]);
+            const [analysisResults, setAnalysisResults] = useState([]);
+            const [selectedAnalysis, setSelectedAnalysis] = useState(null);
+            const [notifications, setNotifications] = useState([]);
 
-            return (
-                <div className="min-h-screen gradient-bg text-white">
-                    <header className="container mx-auto px-6 py-8">
+            // Notification system
+            const addNotification = (type, message) => {
+                const notification = {
+                    id: Date.now(),
+                    type,
+                    message,
+                    timestamp: new Date().toISOString()
+                };
+                setNotifications([notification, ...notifications.slice(0, 4)]);
+
+                setTimeout(() => {
+                    setNotifications(prev => prev.filter(n => n.id !== notification.id));
+                }, 4000);
+            };
+
+            // File upload functions
+            const handleFileUpload = (event) => {
+                const files = Array.from(event.target.files);
+                const newDocuments = files.map((file, index) => ({
+                    id: uploadedDocuments.length + index + 1,
+                    name: file.name,
+                    type: getDocumentType(file.name),
+                    uploadDate: new Date().toISOString().split('T')[0],
+                    status: 'Uploading...',
+                    size: formatFileSize(file.size),
+                    file: file
+                }));
+
+                setUploadedDocuments([...newDocuments, ...uploadedDocuments]);
+
+                // Simulate upload and analysis
+                newDocuments.forEach((doc, index) => {
+                    setTimeout(() => {
+                        setUploadedDocuments(prev => prev.map(d =>
+                            d.id === doc.id ? { ...d, status: 'Analyzing...' } : d
+                        ));
+
+                        setTimeout(() => {
+                            setUploadedDocuments(prev => prev.map(d =>
+                                d.id === doc.id ? { ...d, status: 'Analyzed' } : d
+                            ));
+                            generateAIAnalysis(doc);
+                            addNotification('success', `AI analysis completed for ${doc.name}`);
+                        }, 3000);
+                    }, 1000 + index * 500);
+                });
+            };
+
+            const getDocumentType = (filename) => {
+                const ext = filename.split('.').pop().toLowerCase();
+                switch(ext) {
+                    case 'pdf': return 'PDF Document';
+                    case 'xlsx': case 'xls': return 'Excel Spreadsheet';
+                    case 'csv': return 'CSV File';
+                    default: return 'Document';
+                }
+            };
+
+            const formatFileSize = (bytes) => {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            };
+
+            const generateAIAnalysis = (document) => {
+                const analysisTypes = ['Financial Audit', 'Compliance Check', 'Risk Assessment', 'Tax Review'];
+                const findings = [
+                    { type: 'success', message: 'Revenue recognition follows accounting standards', severity: 'low' },
+                    { type: 'warning', message: 'Unusual expense pattern in travel category', severity: 'medium' },
+                    { type: 'error', message: 'Potential duplicate transactions detected', severity: 'high' },
+                    { type: 'success', message: 'Cash flow management is optimal', severity: 'low' },
+                    { type: 'warning', message: 'Budget variance exceeds 10% threshold', severity: 'medium' }
+                ];
+
+                const newAnalysis = {
+                    id: analysisResults.length + 1,
+                    documentName: document.name,
+                    analysisType: analysisTypes[Math.floor(Math.random() * analysisTypes.length)],
+                    score: Math.floor(Math.random() * 20) + 80,
+                    findings: findings.slice(0, Math.floor(Math.random() * 3) + 2),
+                    recommendations: [
+                        'Implement automated expense tracking system for better accuracy',
+                        'Review quarterly budget allocations to optimize cash flow',
+                        'Enhance invoice approval workflow to reduce processing time',
+                        'Update financial reporting templates for IT Park compliance'
+                    ].slice(0, Math.floor(Math.random() * 2) + 2),
+                    complianceIssues: [
+                        'Financial reporting: Fully compliant with IT Park standards',
+                        'Tax documentation: Minor formatting issues identified',
+                        'E-signature compliance: Requires E-Imzo integration'
+                    ],
+                    financialMetrics: {
+                        revenueGrowth: (Math.random() * 20 - 5).toFixed(1),
+                        expenseRatio: (Math.random() * 30 + 50).toFixed(1),
+                        profitMargin: (Math.random() * 40 + 10).toFixed(1),
+                        cashFlow: Math.random() > 0.3 ? 'Positive' : 'Negative'
+                    },
+                    riskLevel: Math.random() > 0.7 ? 'Low' : Math.random() > 0.4 ? 'Medium' : 'High',
+                    processingTime: `${Math.floor(Math.random() * 5) + 1}.${Math.floor(Math.random() * 9)}s`,
+                    lastUpdated: new Date().toISOString().split('T')[0]
+                };
+
+                setAnalysisResults([newAnalysis, ...analysisResults]);
+            };
+
+            const clearPreviousFiles = () => {
+                setUploadedDocuments([]);
+                setAnalysisResults([]);
+                setSelectedAnalysis(null);
+                const fileInput = document.getElementById('fileUpload');
+                if (fileInput) fileInput.value = '';
+                addNotification('info', 'All files and analysis results cleared');
+            };
+
+            const viewAnalysis = (analysis) => {
+                setSelectedAnalysis(analysis);
+                setCurrentView('detailedAnalysis');
+            };
+
+            const viewFullAnalysis = (analysis) => {
+                setSelectedAnalysis(analysis);
+                setCurrentView('fullAnalysis');
+            };
+
+            // Notification Component
+            const NotificationSystem = () => (
+                <div className="fixed top-4 right-4 z-50 space-y-2">
+                    {notifications.map(notification => (
+                        <div
+                            key={notification.id}
+                            className={`p-4 rounded-lg shadow-lg max-w-sm transition-all duration-300 ${
+                                notification.type === 'success' ? 'bg-green-500/90 text-white' :
+                                notification.type === 'error' ? 'bg-red-500/90 text-white' :
+                                notification.type === 'warning' ? 'bg-yellow-500/90 text-black' :
+                                'bg-blue-500/90 text-white'
+                            }`}
+                        >
+                            <div className="flex items-center gap-2">
+                                <span className="text-lg">
+                                    {notification.type === 'success' ? '✅' :
+                                     notification.type === 'error' ? '❌' :
+                                     notification.type === 'warning' ? '⚠️' : 'ℹ️'}
+                                </span>
+                                <p className="text-sm font-medium">{notification.message}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            );
+
+            if (currentView === 'landing') {
+                return (
+                    <div className="min-h-screen gradient-bg text-white">
+                        <NotificationSystem />
+                        <header className="container mx-auto px-6 py-8">
                         <nav className="flex justify-between items-center">
                             <div className="flex items-center gap-3">
                                 <svg width="40" height="40" viewBox="0 0 100 100" className="flex-shrink-0">
@@ -88,7 +246,10 @@
                         </div>
 
                         <div className="grid lg:grid-cols-2 gap-12 max-w-4xl mx-auto">
-                            <div className="bg-slate-800/50 p-12 rounded-xl border border-slate-700 hover:border-emerald-500 transition-all duration-300">
+                            <div
+                                onClick={() => setCurrentView('analysis')}
+                                className="bg-slate-800/50 p-12 rounded-xl border border-slate-700 hover:border-emerald-500 transition-all duration-300 cursor-pointer transform hover:scale-105"
+                            >
                                 <div className="text-6xl mb-6 text-center">📊</div>
                                 <h3 className="text-2xl font-semibold mb-4 text-emerald-400 text-center">AI Financial Analysis</h3>
                                 <p className="text-gray-300 mb-6 text-center">Upload your business or financial reports and get detailed AI-powered accounting analysis and auditing</p>
@@ -173,7 +334,455 @@
                     </footer>
                 </div>
             );
-        };
+        }
+
+        // AI Financial Analysis Page
+        if (currentView === 'analysis') {
+            return (
+                <div className="min-h-screen gradient-bg text-white">
+                    <NotificationSystem />
+
+                    <header className="container mx-auto px-6 py-4 border-b border-slate-700">
+                        <nav className="flex justify-between items-center">
+                            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentView('landing')}>
+                                <svg width="32" height="32" viewBox="0 0 100 100" className="flex-shrink-0">
+                                    <defs>
+                                        <linearGradient id="logoGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stopColor="#10b981" />
+                                            <stop offset="100%" stopColor="#059669" />
+                                        </linearGradient>
+                                    </defs>
+                                    <path d="M20 15 C30 10, 45 12, 55 20 C65 28, 75 40, 80 55 C82 62, 80 68, 75 72 C70 76, 62 78, 55 78 L50 78 C42 78, 35 76, 30 72 L25 68 C18 62, 15 55, 14 48 C13 41, 15 34, 20 28 Z" fill="url(#logoGradient2)" />
+                                    <path d="M25 48 L35 58 L65 28" stroke="white" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                                    <circle cx="75" cy="25" r="2" fill="#10b981" opacity="0.7" />
+                                    <circle cx="80" cy="75" r="1.5" fill="#10b981" opacity="0.5" />
+                                </svg>
+                                <div className="text-xl font-bold text-emerald-400">ComplyAI</div>
+                            </div>
+                            <button onClick={() => setCurrentView('landing')} className="px-4 py-2 rounded hover:bg-slate-700">← Back to Home</button>
+                        </nav>
+                    </header>
+
+                    <div className="container mx-auto px-6 py-8">
+                        <h1 className="text-4xl font-bold mb-8 text-center">📊 AI Financial Analysis</h1>
+
+                        <div className="text-center mb-8">
+                            <p className="text-xl text-gray-300 mb-8">Upload your financial documents for AI-powered analysis</p>
+
+                            <div className="flex flex-col sm:flex-row justify-center gap-4">
+                                <input
+                                    type="file"
+                                    id="fileUpload"
+                                    multiple
+                                    accept=".pdf,.xlsx,.xls,.csv"
+                                    onChange={handleFileUpload}
+                                    className="hidden"
+                                />
+                                <label
+                                    htmlFor="fileUpload"
+                                    className="bg-emerald-500 hover:bg-emerald-600 px-6 py-3 rounded-lg cursor-pointer flex items-center gap-3 text-lg font-semibold justify-center"
+                                >
+                                    📁 Upload Financial Documents
+                                </label>
+                                {(uploadedDocuments.length > 0 || analysisResults.length > 0) && (
+                                    <button
+                                        onClick={clearPreviousFiles}
+                                        className="bg-red-500 hover:bg-red-600 px-6 py-3 rounded-lg transition-colors flex items-center gap-2 font-semibold justify-center"
+                                    >
+                                        🗑️ Clear All Files
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* File Upload Results */}
+                        <div className="grid lg:grid-cols-2 gap-8">
+                            <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                                <h3 className="text-2xl font-semibold mb-4">Uploaded Documents</h3>
+                                <div className="space-y-4">
+                                    {uploadedDocuments.length === 0 ? (
+                                        <div className="text-center py-8 text-gray-400">
+                                            <div className="text-4xl mb-4">📄</div>
+                                            <p>No documents uploaded yet</p>
+                                            <p className="text-sm">Upload financial documents to get AI analysis</p>
+                                        </div>
+                                    ) : (
+                                        uploadedDocuments.map(doc => (
+                                            <div key={doc.id} className="bg-slate-700/50 p-4 rounded-lg border border-slate-600">
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <div>
+                                                        <h4 className="font-semibold">{doc.name}</h4>
+                                                        <p className="text-sm text-gray-400">{doc.type} • {doc.size}</p>
+                                                    </div>
+                                                    <span className={`text-xs px-2 py-1 rounded ${
+                                                        doc.status === 'Uploading...' ? 'bg-blue-500/20 text-blue-400' :
+                                                        doc.status === 'Analyzing...' ? 'bg-yellow-500/20 text-yellow-400' :
+                                                        doc.status === 'Analyzed' ? 'bg-green-500/20 text-green-400' :
+                                                        'bg-gray-500/20 text-gray-400'
+                                                    }`}>
+                                                        {doc.status}
+                                                    </span>
+                                                </div>
+                                                {doc.status === 'Analyzed' && (
+                                                    <div className="flex gap-2 mt-2">
+                                                        <button
+                                                            onClick={() => {
+                                                                const analysis = analysisResults.find(a => a.documentName === doc.name);
+                                                                if (analysis) viewAnalysis(analysis);
+                                                            }}
+                                                            className="bg-emerald-500 hover:bg-emerald-600 px-3 py-1 rounded text-xs"
+                                                        >
+                                                            View Analysis
+                                                        </button>
+                                                        <button
+                                                            onClick={() => {
+                                                                const analysis = analysisResults.find(a => a.documentName === doc.name);
+                                                                if (analysis) viewFullAnalysis(analysis);
+                                                            }}
+                                                            className="bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded text-xs"
+                                                        >
+                                                            View Full Analysis
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                                <h3 className="text-2xl font-semibold mb-4">Recent Analysis Results</h3>
+                                <div className="space-y-4">
+                                    {analysisResults.length === 0 ? (
+                                        <div className="text-center py-8 text-gray-400">
+                                            <div className="text-4xl mb-4">📊</div>
+                                            <p>No analysis results yet</p>
+                                            <p className="text-sm">Upload documents to see AI analysis</p>
+                                        </div>
+                                    ) : (
+                                        analysisResults.slice(0, 3).map(analysis => (
+                                            <div key={analysis.id} className="bg-slate-700/50 p-4 rounded-lg border border-slate-600 cursor-pointer hover:border-emerald-500" onClick={() => viewAnalysis(analysis)}>
+                                                <div className="flex justify-between items-start mb-3">
+                                                    <div>
+                                                        <h4 className="font-semibold">{analysis.documentName}</h4>
+                                                        <p className="text-sm text-gray-400">{analysis.analysisType}</p>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <div className={`text-2xl font-bold ${
+                                                            analysis.score >= 90 ? 'text-green-400' :
+                                                            analysis.score >= 80 ? 'text-yellow-400' : 'text-red-400'
+                                                        }`}>{analysis.score}%</div>
+                                                        <div className="text-xs text-gray-400">Compliance Score</div>
+                                                    </div>
+                                                </div>
+                                                <div className="mb-3">
+                                                    <div className="text-sm text-gray-400 mb-1">Key Findings:</div>
+                                                    {analysis.findings.slice(0, 2).map((finding, index) => (
+                                                        <div key={index} className={`text-xs mb-1 ${
+                                                            finding.type === 'success' ? 'text-green-400' :
+                                                            finding.type === 'warning' ? 'text-yellow-400' : 'text-red-400'
+                                                        }`}>
+                                                            {finding.type === 'success' ? '✅' : finding.type === 'warning' ? '⚠️' : '❌'} {finding.message}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            viewAnalysis(analysis);
+                                                        }}
+                                                        className="bg-emerald-500 hover:bg-emerald-600 px-3 py-1 rounded text-xs"
+                                                    >
+                                                        View Analysis
+                                                    </button>
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            viewFullAnalysis(analysis);
+                                                        }}
+                                                        className="bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded text-xs"
+                                                    >
+                                                        View Full Analysis
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Detailed Analysis View
+        if (currentView === 'detailedAnalysis' && selectedAnalysis) {
+            return (
+                <div className="min-h-screen gradient-bg text-white">
+                    <NotificationSystem />
+
+                    <header className="container mx-auto px-6 py-4 border-b border-slate-700">
+                        <nav className="flex justify-between items-center">
+                            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentView('landing')}>
+                                <svg width="32" height="32" viewBox="0 0 100 100" className="flex-shrink-0">
+                                    <defs>
+                                        <linearGradient id="logoGradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stopColor="#10b981" />
+                                            <stop offset="100%" stopColor="#059669" />
+                                        </linearGradient>
+                                    </defs>
+                                    <path d="M20 15 C30 10, 45 12, 55 20 C65 28, 75 40, 80 55 C82 62, 80 68, 75 72 C70 76, 62 78, 55 78 L50 78 C42 78, 35 76, 30 72 L25 68 C18 62, 15 55, 14 48 C13 41, 15 34, 20 28 Z" fill="url(#logoGradient3)" />
+                                    <path d="M25 48 L35 58 L65 28" stroke="white" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                                    <circle cx="75" cy="25" r="2" fill="#10b981" opacity="0.7" />
+                                    <circle cx="80" cy="75" r="1.5" fill="#10b981" opacity="0.5" />
+                                </svg>
+                                <div className="text-xl font-bold text-emerald-400">ComplyAI</div>
+                            </div>
+                            <button onClick={() => setCurrentView('analysis')} className="px-4 py-2 rounded hover:bg-slate-700">← Back to Analysis</button>
+                        </nav>
+                    </header>
+
+                    <div className="container mx-auto px-6 py-8">
+                        <div className="max-w-4xl mx-auto">
+                            <h1 className="text-3xl font-bold mb-2">{selectedAnalysis.documentName}</h1>
+                            <p className="text-gray-400 mb-8">{selectedAnalysis.analysisType} • {selectedAnalysis.lastUpdated}</p>
+
+                            <div className="grid md:grid-cols-3 gap-6 mb-8">
+                                <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700 text-center">
+                                    <div className={`text-3xl font-bold mb-2 ${
+                                        selectedAnalysis.score >= 90 ? 'text-green-400' :
+                                        selectedAnalysis.score >= 80 ? 'text-yellow-400' : 'text-red-400'
+                                    }`}>{selectedAnalysis.score}%</div>
+                                    <div className="text-gray-400">Compliance Score</div>
+                                </div>
+                                <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700 text-center">
+                                    <div className={`text-3xl font-bold mb-2 ${
+                                        selectedAnalysis.riskLevel === 'Low' ? 'text-green-400' :
+                                        selectedAnalysis.riskLevel === 'Medium' ? 'text-yellow-400' : 'text-red-400'
+                                    }`}>{selectedAnalysis.riskLevel}</div>
+                                    <div className="text-gray-400">Risk Level</div>
+                                </div>
+                                <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700 text-center">
+                                    <div className="text-3xl font-bold mb-2 text-blue-400">{selectedAnalysis.processingTime}</div>
+                                    <div className="text-gray-400">Processing Time</div>
+                                </div>
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-8">
+                                <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                                    <h3 className="text-xl font-semibold mb-4">Key Findings</h3>
+                                    <div className="space-y-3">
+                                        {selectedAnalysis.findings.map((finding, index) => (
+                                            <div key={index} className={`p-3 rounded-lg border ${
+                                                finding.type === 'success' ? 'bg-green-500/10 border-green-500/30' :
+                                                finding.type === 'warning' ? 'bg-yellow-500/10 border-yellow-500/30' :
+                                                'bg-red-500/10 border-red-500/30'
+                                            }`}>
+                                                <div className="flex items-start gap-2">
+                                                    <span className="text-lg">
+                                                        {finding.type === 'success' ? '✅' : finding.type === 'warning' ? '⚠️' : '❌'}
+                                                    </span>
+                                                    <div>
+                                                        <p className={`font-medium ${
+                                                            finding.type === 'success' ? 'text-green-400' :
+                                                            finding.type === 'warning' ? 'text-yellow-400' : 'text-red-400'
+                                                        }`}>{finding.message}</p>
+                                                        <p className="text-xs text-gray-400 mt-1">Severity: {finding.severity}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                                    <h3 className="text-xl font-semibold mb-4">Recommendations</h3>
+                                    <div className="space-y-3">
+                                        {selectedAnalysis.recommendations.map((rec, index) => (
+                                            <div key={index} className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/30">
+                                                <div className="flex items-start gap-2">
+                                                    <span className="text-blue-400">💡</span>
+                                                    <p className="text-gray-300">{rec}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mt-8 text-center">
+                                <button
+                                    onClick={() => viewFullAnalysis(selectedAnalysis)}
+                                    className="bg-emerald-500 hover:bg-emerald-600 px-8 py-3 rounded-lg font-semibold mr-4"
+                                >
+                                    View Full Analysis
+                                </button>
+                                <button
+                                    onClick={() => setCurrentView('analysis')}
+                                    className="bg-slate-600 hover:bg-slate-700 px-8 py-3 rounded-lg font-semibold"
+                                >
+                                    Back to Analysis
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Full Analysis View
+        if (currentView === 'fullAnalysis' && selectedAnalysis) {
+            return (
+                <div className="min-h-screen gradient-bg text-white">
+                    <NotificationSystem />
+
+                    <header className="container mx-auto px-6 py-4 border-b border-slate-700">
+                        <nav className="flex justify-between items-center">
+                            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentView('landing')}>
+                                <svg width="32" height="32" viewBox="0 0 100 100" className="flex-shrink-0">
+                                    <defs>
+                                        <linearGradient id="logoGradient4" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stopColor="#10b981" />
+                                            <stop offset="100%" stopColor="#059669" />
+                                        </linearGradient>
+                                    </defs>
+                                    <path d="M20 15 C30 10, 45 12, 55 20 C65 28, 75 40, 80 55 C82 62, 80 68, 75 72 C70 76, 62 78, 55 78 L50 78 C42 78, 35 76, 30 72 L25 68 C18 62, 15 55, 14 48 C13 41, 15 34, 20 28 Z" fill="url(#logoGradient4)" />
+                                    <path d="M25 48 L35 58 L65 28" stroke="white" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                                    <circle cx="75" cy="25" r="2" fill="#10b981" opacity="0.7" />
+                                    <circle cx="80" cy="75" r="1.5" fill="#10b981" opacity="0.5" />
+                                </svg>
+                                <div className="text-xl font-bold text-emerald-400">ComplyAI</div>
+                            </div>
+                            <button onClick={() => setCurrentView('detailedAnalysis')} className="px-4 py-2 rounded hover:bg-slate-700">← Back to Analysis</button>
+                        </nav>
+                    </header>
+
+                    <div className="container mx-auto px-6 py-8">
+                        <div className="max-w-6xl mx-auto">
+                            <h1 className="text-3xl font-bold mb-2">Full Analysis Report</h1>
+                            <h2 className="text-xl text-emerald-400 mb-2">{selectedAnalysis.documentName}</h2>
+                            <p className="text-gray-400 mb-8">{selectedAnalysis.analysisType} • Generated on {selectedAnalysis.lastUpdated}</p>
+
+                            {/* Financial Metrics */}
+                            <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700 mb-8">
+                                <h3 className="text-2xl font-semibold mb-6">📈 Financial Metrics</h3>
+                                <div className="grid md:grid-cols-4 gap-6">
+                                    <div className="text-center">
+                                        <div className={`text-3xl font-bold mb-2 ${
+                                            parseFloat(selectedAnalysis.financialMetrics.revenueGrowth) >= 0 ? 'text-green-400' : 'text-red-400'
+                                        }`}>
+                                            {selectedAnalysis.financialMetrics.revenueGrowth}%
+                                        </div>
+                                        <div className="text-gray-400">Revenue Growth</div>
+                                    </div>
+                                    <div className="text-center">
+                                        <div className="text-3xl font-bold mb-2 text-blue-400">{selectedAnalysis.financialMetrics.expenseRatio}%</div>
+                                        <div className="text-gray-400">Expense Ratio</div>
+                                    </div>
+                                    <div className="text-center">
+                                        <div className="text-3xl font-bold mb-2 text-purple-400">{selectedAnalysis.financialMetrics.profitMargin}%</div>
+                                        <div className="text-gray-400">Profit Margin</div>
+                                    </div>
+                                    <div className="text-center">
+                                        <div className={`text-3xl font-bold mb-2 ${
+                                            selectedAnalysis.financialMetrics.cashFlow === 'Positive' ? 'text-green-400' : 'text-red-400'
+                                        }`}>
+                                            {selectedAnalysis.financialMetrics.cashFlow}
+                                        </div>
+                                        <div className="text-gray-400">Cash Flow</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Compliance Issues */}
+                            <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700 mb-8">
+                                <h3 className="text-2xl font-semibold mb-6">⚖️ Compliance Status</h3>
+                                <div className="space-y-4">
+                                    {selectedAnalysis.complianceIssues.map((issue, index) => (
+                                        <div key={index} className="p-4 rounded-lg bg-slate-700/50 border border-slate-600">
+                                            <p className="text-gray-300">{issue}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* All Findings */}
+                            <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700 mb-8">
+                                <h3 className="text-2xl font-semibold mb-6">🔍 Detailed Findings</h3>
+                                <div className="space-y-4">
+                                    {selectedAnalysis.findings.map((finding, index) => (
+                                        <div key={index} className={`p-4 rounded-lg border ${
+                                            finding.type === 'success' ? 'bg-green-500/10 border-green-500/30' :
+                                            finding.type === 'warning' ? 'bg-yellow-500/10 border-yellow-500/30' :
+                                            'bg-red-500/10 border-red-500/30'
+                                        }`}>
+                                            <div className="flex items-start gap-3">
+                                                <span className="text-2xl">
+                                                    {finding.type === 'success' ? '✅' : finding.type === 'warning' ? '⚠️' : '❌'}
+                                                </span>
+                                                <div className="flex-1">
+                                                    <p className={`font-medium text-lg mb-2 ${
+                                                        finding.type === 'success' ? 'text-green-400' :
+                                                        finding.type === 'warning' ? 'text-yellow-400' : 'text-red-400'
+                                                    }`}>{finding.message}</p>
+                                                    <p className="text-gray-400">Severity Level: <span className="capitalize">{finding.severity}</span></p>
+                                                    <p className="text-sm text-gray-500 mt-2">
+                                                        This finding indicates {finding.type === 'success' ? 'compliance with' : finding.type === 'warning' ? 'potential issues with' : 'violations of'}
+                                                        {' '}financial reporting standards and IT Park requirements.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* All Recommendations */}
+                            <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700 mb-8">
+                                <h3 className="text-2xl font-semibold mb-6">💡 Action Recommendations</h3>
+                                <div className="space-y-4">
+                                    {selectedAnalysis.recommendations.map((rec, index) => (
+                                        <div key={index} className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/30">
+                                            <div className="flex items-start gap-3">
+                                                <span className="text-2xl text-blue-400">💡</span>
+                                                <div className="flex-1">
+                                                    <p className="text-gray-300 text-lg">{rec}</p>
+                                                    <p className="text-sm text-gray-500 mt-2">
+                                                        Priority: <span className="text-blue-400">High</span> •
+                                                        Expected Impact: <span className="text-green-400">Positive</span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="text-center">
+                                <button
+                                    onClick={() => setCurrentView('analysis')}
+                                    className="bg-emerald-500 hover:bg-emerald-600 px-8 py-3 rounded-lg font-semibold mr-4"
+                                >
+                                    Back to Analysis Dashboard
+                                </button>
+                                <button
+                                    onClick={() => addNotification('info', 'Full analysis report downloaded successfully')}
+                                    className="bg-blue-500 hover:bg-blue-600 px-8 py-3 rounded-lg font-semibold"
+                                >
+                                    Download Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        return <div>Loading...</div>;
+    };
 
         ReactDOM.render(<ComplyAI />, document.getElementById('root'));
     </script>
