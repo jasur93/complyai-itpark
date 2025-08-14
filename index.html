@@ -59,6 +59,7 @@
             const [uploadedDocuments, setUploadedDocuments] = useState([]);
             const [analysisResults, setAnalysisResults] = useState([]);
             const [isAnalyzing, setIsAnalyzing] = useState(false);
+            const [selectedAnalysis, setSelectedAnalysis] = useState(null);
             const [showTripForm, setShowTripForm] = useState(false);
             const [tripForm, setTripForm] = useState({
                 destination: '',
@@ -398,6 +399,26 @@
                 };
 
                 setAnalysisResults([newAnalysis, ...analysisResults]);
+            };
+
+            const clearPreviousFiles = () => {
+                setUploadedDocuments([]);
+                setAnalysisResults([]);
+                setSelectedAnalysis(null);
+                setIsAnalyzing(false);
+                // Clear file input
+                const fileInput = document.getElementById('fileUpload');
+                if (fileInput) fileInput.value = '';
+            };
+
+            const viewAnalysis = (analysis) => {
+                setSelectedAnalysis(analysis);
+                setCurrentView('detailedAnalysis');
+            };
+
+            const viewFullAnalysis = (analysis) => {
+                setSelectedAnalysis(analysis);
+                setCurrentView('detailedAnalysis');
             };
 
             const addExpense = () => {
@@ -789,7 +810,7 @@
                         <div className="text-center mb-8">
                             <h1 className="text-4xl font-bold mb-4">📊 AI Financial Analysis</h1>
                             <p className="text-xl text-gray-300 mb-8">Upload your business or financial reports to get detailed AI-powered accounting analysis</p>
-                            <div className="flex justify-center">
+                            <div className="flex justify-center gap-4">
                                 <input
                                     type="file"
                                     id="fileUpload"
@@ -804,6 +825,14 @@
                                 >
                                     📁 Upload Financial Documents
                                 </label>
+                                {(uploadedDocuments.length > 0 || analysisResults.length > 0) && (
+                                    <button
+                                        onClick={clearPreviousFiles}
+                                        className="bg-red-500 hover:bg-red-600 px-6 py-4 rounded-lg transition-colors flex items-center gap-2 font-semibold"
+                                    >
+                                        🗑️ Clear All Files
+                                    </button>
+                                )}
                             </div>
                         </div>
 
@@ -829,8 +858,7 @@
                                                     onClick={() => {
                                                         const analysis = analysisResults.find(a => a.documentName === doc.name);
                                                         if (analysis) {
-                                                            setCurrentView('analysis');
-                                                            // You could set a selected analysis state here
+                                                            viewAnalysis(analysis);
                                                         }
                                                     }}
                                                     className="bg-emerald-500 hover:bg-emerald-600 px-4 py-2 rounded text-sm"
@@ -886,7 +914,7 @@
                                             </div>
 
                                             <button
-                                                onClick={() => setCurrentView('analysis')}
+                                                onClick={() => viewFullAnalysis(analysis)}
                                                 className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded text-sm"
                                             >
                                                 View Full Analysis
@@ -1101,8 +1129,12 @@
 
 
         // Detailed Analysis View
-        if (currentView === 'analysis') {
-            const selectedAnalysis = analysisResults[0]; // For demo, show first analysis
+        if (currentView === 'detailedAnalysis') {
+            if (!selectedAnalysis) {
+                // If no analysis selected, redirect to analysis page
+                setCurrentView('analysis');
+                return null;
+            }
 
             return (
                 <div className="min-h-screen gradient-bg text-white">
