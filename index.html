@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ComplyAI - AI-Powered Compliance System</title>
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -46,244 +43,226 @@
     </style>
 </head>
 <body>
-    <div id="root"></div>
-
-    <script type="text/babel">
-        const { useState, useEffect } = React;
-
-        const ComplyAI = () => {
-            const [currentView, setCurrentView] = useState('landing');
-            const [isVisible, setIsVisible] = useState(false);
-
-            useEffect(() => {
-                setIsVisible(true);
-            }, []);
-
-            const addNotification = (type, message) => {
-                console.log(`${type}: ${message}`);
-                alert(message);
-            };
-
-            if (currentView === 'landing') {
-                return (
-                    <div className="min-h-screen gradient-bg text-white">
-                        {/* Header */}
-                        <header className="container mx-auto px-6 py-8">
-                            <nav className="flex justify-between items-center">
-                                <div className="flex items-center gap-3">
-                                    <div className="text-2xl font-bold text-emerald-400">
-                                        ComplyAI
-                                    </div>
-                                </div>
-                                <button 
-                                    onClick={() => setCurrentView('dashboard')} 
-                                    className="bg-emerald-500 hover:bg-emerald-600 px-6 py-2 rounded-lg transition-colors glow-effect"
-                                >
-                                    Try Dashboard
-                                </button>
-                            </nav>
-                        </header>
-
-                        {/* Hero Section */}
-                        <section className="container mx-auto px-6 py-20 text-center">
-                            <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-                                <h1 className="text-5xl md:text-7xl font-bold mb-6">
-                                    <span className="bg-gradient-to-r from-emerald-400 to-blue-500 bg-clip-text text-transparent">
-                                        ComplyAI
-                                    </span>
-                                </h1>
-                                <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
-                                    AI-powered compliance management system for IT Park resident companies
-                                </p>
-                                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                    <button
-                                        onClick={() => setCurrentView('dashboard')}
-                                        className="bg-emerald-500 hover:bg-emerald-600 px-8 py-4 rounded-lg text-lg font-semibold transition-colors glow-effect"
-                                    >
-                                        Start Free Trial
-                                    </button>
-                                    <button
-                                        onClick={() => addNotification('info', 'Welcome to ComplyAI Demo!')}
-                                        className="border border-emerald-500 hover:bg-emerald-500 px-8 py-4 rounded-lg text-lg font-semibold transition-colors"
-                                    >
-                                        Watch Demo
-                                    </button>
-                                </div>
-                            </div>
-                        </section>
-
-                        {/* Features Section */}
-                        <section className="container mx-auto px-6 py-20">
-                            <div className="text-center mb-16">
-                                <h2 className="text-4xl font-bold mb-4">Powerful Features</h2>
-                                <p className="text-xl text-gray-300">Everything you need for seamless compliance management</p>
-                            </div>
-
-                            <div className="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto">
-                                <div className="bg-slate-800/50 backdrop-blur-sm p-12 rounded-xl border border-slate-700 hover:border-emerald-500 transition-all duration-300 animate-float cursor-pointer transform hover:scale-105">
-                                    <div className="text-6xl mb-6 text-center">📊</div>
-                                    <h3 className="text-2xl font-semibold mb-4 text-emerald-400 text-center">AI Financial Analysis</h3>
-                                    <p className="text-gray-300 mb-6 text-center leading-relaxed">Upload your business or financial reports and get detailed AI-powered accounting analysis and auditing</p>
-                                    <div className="text-center">
-                                        <button 
-                                            onClick={() => setCurrentView('analysis')}
-                                            className="bg-emerald-500 hover:bg-emerald-600 px-8 py-3 rounded-lg font-semibold transition-colors"
-                                        >
-                                            Start Now →
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div className="bg-slate-800/50 backdrop-blur-sm p-12 rounded-xl border border-slate-700 hover:border-blue-500 transition-all duration-300 animate-float cursor-pointer transform hover:scale-105">
-                                    <div className="text-6xl mb-6 text-center">✈️</div>
-                                    <h3 className="text-2xl font-semibold mb-4 text-blue-400 text-center">Business Trip Reports</h3>
-                                    <p className="text-gray-300 mb-6 text-center leading-relaxed">Generate comprehensive business trip reports with expense tracking and compliance verification</p>
-                                    <div className="text-center">
-                                        <button 
-                                            onClick={() => setCurrentView('trips')}
-                                            className="bg-blue-500 hover:bg-blue-600 px-8 py-3 rounded-lg font-semibold transition-colors"
-                                        >
-                                            Start Now →
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-
-                        {/* Footer */}
-                        <footer className="container mx-auto px-6 py-12 border-t border-slate-700">
-                            <div className="text-center text-gray-400">
-                                <p>&copy; 2024 ComplyAI. Made with ❤️ for IT Park resident companies.</p>
-                            </div>
-                        </footer>
+    <!-- Landing Page -->
+    <div id="landing-page" class="min-h-screen gradient-bg text-white">
+        <!-- Header -->
+        <header class="container mx-auto px-6 py-8">
+            <nav class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="text-2xl font-bold text-emerald-400">
+                        ComplyAI
                     </div>
-                );
-            }
+                </div>
+                <button
+                    onclick="showDashboard()"
+                    class="bg-emerald-500 hover:bg-emerald-600 px-6 py-2 rounded-lg transition-colors glow-effect"
+                >
+                    Try Dashboard
+                </button>
+            </nav>
+        </header>
 
-            if (currentView === 'dashboard') {
-                return (
-                    <div className="min-h-screen gradient-bg text-white">
-                        <header className="container mx-auto px-6 py-4 border-b border-slate-700">
-                            <nav className="flex justify-between items-center">
-                                <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentView('landing')}>
-                                    <div className="text-xl font-bold text-emerald-400">ComplyAI</div>
-                                </div>
-                                <div className="flex space-x-4">
-                                    <button onClick={() => setCurrentView('analysis')} className="px-4 py-2 rounded hover:bg-slate-700">Financial Analysis</button>
-                                    <button onClick={() => setCurrentView('trips')} className="px-4 py-2 rounded hover:bg-slate-700">Business Trips</button>
-                                </div>
-                            </nav>
-                        </header>
+        <!-- Hero Section -->
+        <section class="container mx-auto px-6 py-20 text-center">
+            <div class="transition-all duration-1000 opacity-100 translate-y-0">
+                <h1 class="text-5xl md:text-7xl font-bold mb-6">
+                    <span class="bg-gradient-to-r from-emerald-400 to-blue-500 bg-clip-text text-transparent">
+                        ComplyAI
+                    </span>
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
+                    AI-powered compliance management system for IT Park resident companies
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button
+                        onclick="showDashboard()"
+                        class="bg-emerald-500 hover:bg-emerald-600 px-8 py-4 rounded-lg text-lg font-semibold transition-colors glow-effect"
+                    >
+                        Start Free Trial
+                    </button>
+                    <button
+                        onclick="showDemo()"
+                        class="border border-emerald-500 hover:bg-emerald-500 px-8 py-4 rounded-lg text-lg font-semibold transition-colors"
+                    >
+                        Watch Demo
+                    </button>
+                </div>
+            </div>
+        </section>
 
-                        <div className="container mx-auto px-6 py-8">
-                            <h1 className="text-4xl font-bold mb-8 text-center">Choose Your Service</h1>
+        <!-- Features Section -->
+        <section class="container mx-auto px-6 py-20">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4">Powerful Features</h2>
+                <p class="text-xl text-gray-300">Everything you need for seamless compliance management</p>
+            </div>
 
-                            <div className="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto">
-                                <div
-                                    onClick={() => setCurrentView('analysis')}
-                                    className="bg-slate-800/50 p-12 rounded-xl border border-slate-700 hover:border-emerald-500 transition-all duration-300 cursor-pointer transform hover:scale-105"
-                                >
-                                    <div className="text-6xl mb-6 text-center">📊</div>
-                                    <h3 className="text-2xl font-semibold mb-4 text-emerald-400 text-center">AI Financial Analysis</h3>
-                                    <p className="text-gray-300 mb-6 text-center">Upload your business or financial reports and get detailed AI-powered accounting analysis and auditing</p>
-                                    <div className="text-center">
-                                        <button className="bg-emerald-500 hover:bg-emerald-600 px-8 py-3 rounded-lg font-semibold">
-                                            Upload Documents
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div
-                                    onClick={() => setCurrentView('trips')}
-                                    className="bg-slate-800/50 p-12 rounded-xl border border-slate-700 hover:border-blue-500 transition-all duration-300 cursor-pointer transform hover:scale-105"
-                                >
-                                    <div className="text-6xl mb-6 text-center">✈️</div>
-                                    <h3 className="text-2xl font-semibold mb-4 text-blue-400 text-center">Business Trip Reports</h3>
-                                    <p className="text-gray-300 mb-6 text-center">Generate comprehensive business trip reports with expense tracking and compliance verification</p>
-                                    <div className="text-center">
-                                        <button className="bg-blue-500 hover:bg-blue-600 px-8 py-3 rounded-lg font-semibold">
-                                            Create Report
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            <div class="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+                <div class="bg-slate-800/50 backdrop-blur-sm p-12 rounded-xl border border-slate-700 hover:border-emerald-500 transition-all duration-300 animate-float cursor-pointer transform hover:scale-105" onclick="showAnalysis()">
+                    <div class="text-6xl mb-6 text-center">📊</div>
+                    <h3 class="text-2xl font-semibold mb-4 text-emerald-400 text-center">AI Financial Analysis</h3>
+                    <p class="text-gray-300 mb-6 text-center leading-relaxed">Upload your business or financial reports and get detailed AI-powered accounting analysis and auditing</p>
+                    <div class="text-center">
+                        <button class="bg-emerald-500 hover:bg-emerald-600 px-8 py-3 rounded-lg font-semibold transition-colors">
+                            Start Now →
+                        </button>
                     </div>
-                );
-            }
+                </div>
 
-            if (currentView === 'analysis') {
-                return (
-                    <div className="min-h-screen gradient-bg text-white">
-                        <header className="container mx-auto px-6 py-4 border-b border-slate-700">
-                            <nav className="flex justify-between items-center">
-                                <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentView('landing')}>
-                                    <div className="text-xl font-bold text-emerald-400">ComplyAI</div>
-                                </div>
-                                <button onClick={() => setCurrentView('dashboard')} className="px-4 py-2 rounded hover:bg-slate-700">← Back to Dashboard</button>
-                            </nav>
-                        </header>
-
-                        <div className="container mx-auto px-6 py-8">
-                            <h1 className="text-4xl font-bold mb-8 text-center">📊 AI Financial Analysis</h1>
-                            
-                            <div className="text-center mb-8">
-                                <p className="text-xl text-gray-300 mb-8">Upload your financial documents for AI-powered analysis</p>
-                                
-                                <div className="flex justify-center gap-4">
-                                    <button
-                                        onClick={() => addNotification('info', 'File upload functionality will be available soon!')}
-                                        className="bg-emerald-500 hover:bg-emerald-600 px-8 py-4 rounded-lg text-lg font-semibold glow-effect"
-                                    >
-                                        📁 Upload Financial Documents
-                                    </button>
-                                    <button
-                                        onClick={() => addNotification('info', 'Auditor Panel: Professional auditing tools coming soon!')}
-                                        className="bg-blue-500 hover:bg-blue-600 px-8 py-4 rounded-lg transition-colors flex items-center gap-2 font-semibold"
-                                    >
-                                        👨‍💼 Auditor Panel
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                <div class="bg-slate-800/50 backdrop-blur-sm p-12 rounded-xl border border-slate-700 hover:border-blue-500 transition-all duration-300 animate-float cursor-pointer transform hover:scale-105" onclick="showTrips()">
+                    <div class="text-6xl mb-6 text-center">✈️</div>
+                    <h3 class="text-2xl font-semibold mb-4 text-blue-400 text-center">Business Trip Reports</h3>
+                    <p class="text-gray-300 mb-6 text-center leading-relaxed">Generate comprehensive business trip reports with expense tracking and compliance verification</p>
+                    <div class="text-center">
+                        <button class="bg-blue-500 hover:bg-blue-600 px-8 py-3 rounded-lg font-semibold transition-colors">
+                            Start Now →
+                        </button>
                     </div>
-                );
-            }
+                </div>
+            </div>
+        </section>
 
-            if (currentView === 'trips') {
-                return (
-                    <div className="min-h-screen gradient-bg text-white">
-                        <header className="container mx-auto px-6 py-4 border-b border-slate-700">
-                            <nav className="flex justify-between items-center">
-                                <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentView('landing')}>
-                                    <div className="text-xl font-bold text-emerald-400">ComplyAI</div>
-                                </div>
-                                <button onClick={() => setCurrentView('dashboard')} className="px-4 py-2 rounded hover:bg-slate-700">← Back to Dashboard</button>
-                            </nav>
-                        </header>
+        <!-- Footer -->
+        <footer class="container mx-auto px-6 py-12 border-t border-slate-700">
+            <div class="text-center text-gray-400">
+                <p>&copy; 2024 ComplyAI. Made with ❤️ for IT Park resident companies.</p>
+            </div>
+        </footer>
+    </div>
 
-                        <div className="container mx-auto px-6 py-8">
-                            <h1 className="text-4xl font-bold mb-8 text-center">✈️ Business Trip Reports</h1>
-                            
-                            <div className="text-center mb-8">
-                                <p className="text-xl text-gray-300 mb-8">Generate comprehensive business trip reports</p>
-                                
-                                <button
-                                    onClick={() => addNotification('info', 'Business trip report functionality will be available soon!')}
-                                    className="bg-blue-500 hover:bg-blue-600 px-8 py-4 rounded-lg text-lg font-semibold"
-                                >
-                                    Create New Trip Report
-                                </button>
-                            </div>
-                        </div>
+    <!-- Dashboard Page -->
+    <div id="dashboard-page" class="min-h-screen gradient-bg text-white" style="display: none;">
+        <header class="container mx-auto px-6 py-4 border-b border-slate-700">
+            <nav class="flex justify-between items-center">
+                <div class="flex items-center gap-3 cursor-pointer" onclick="showLanding()">
+                    <div class="text-xl font-bold text-emerald-400">ComplyAI</div>
+                </div>
+                <div class="flex space-x-4">
+                    <button onclick="showAnalysis()" class="px-4 py-2 rounded hover:bg-slate-700">Financial Analysis</button>
+                    <button onclick="showTrips()" class="px-4 py-2 rounded hover:bg-slate-700">Business Trips</button>
+                </div>
+            </nav>
+        </header>
+
+        <div class="container mx-auto px-6 py-8">
+            <h1 class="text-4xl font-bold mb-8 text-center">Choose Your Service</h1>
+
+            <div class="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+                <div onclick="showAnalysis()" class="bg-slate-800/50 p-12 rounded-xl border border-slate-700 hover:border-emerald-500 transition-all duration-300 cursor-pointer transform hover:scale-105">
+                    <div class="text-6xl mb-6 text-center">📊</div>
+                    <h3 class="text-2xl font-semibold mb-4 text-emerald-400 text-center">AI Financial Analysis</h3>
+                    <p class="text-gray-300 mb-6 text-center">Upload your business or financial reports and get detailed AI-powered accounting analysis and auditing</p>
+                    <div class="text-center">
+                        <button class="bg-emerald-500 hover:bg-emerald-600 px-8 py-3 rounded-lg font-semibold">
+                            Upload Documents
+                        </button>
                     </div>
-                );
-            }
+                </div>
 
-            return <div>Loading...</div>;
-        };
+                <div onclick="showTrips()" class="bg-slate-800/50 p-12 rounded-xl border border-slate-700 hover:border-blue-500 transition-all duration-300 cursor-pointer transform hover:scale-105">
+                    <div class="text-6xl mb-6 text-center">✈️</div>
+                    <h3 class="text-2xl font-semibold mb-4 text-blue-400 text-center">Business Trip Reports</h3>
+                    <p class="text-gray-300 mb-6 text-center">Generate comprehensive business trip reports with expense tracking and compliance verification</p>
+                    <div class="text-center">
+                        <button class="bg-blue-500 hover:bg-blue-600 px-8 py-3 rounded-lg font-semibold">
+                            Create Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        ReactDOM.render(<ComplyAI />, document.getElementById('root'));
+    <!-- Analysis Page -->
+    <div id="analysis-page" class="min-h-screen gradient-bg text-white" style="display: none;">
+        <header class="container mx-auto px-6 py-4 border-b border-slate-700">
+            <nav class="flex justify-between items-center">
+                <div class="flex items-center gap-3 cursor-pointer" onclick="showLanding()">
+                    <div class="text-xl font-bold text-emerald-400">ComplyAI</div>
+                </div>
+                <button onclick="showDashboard()" class="px-4 py-2 rounded hover:bg-slate-700">← Back to Dashboard</button>
+            </nav>
+        </header>
+
+        <div class="container mx-auto px-6 py-8">
+            <h1 class="text-4xl font-bold mb-8 text-center">📊 AI Financial Analysis</h1>
+
+            <div class="text-center mb-8">
+                <p class="text-xl text-gray-300 mb-8">Upload your financial documents for AI-powered analysis</p>
+
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <button onclick="showNotification('File upload functionality will be available soon!')" class="bg-emerald-500 hover:bg-emerald-600 px-8 py-4 rounded-lg text-lg font-semibold glow-effect">
+                        📁 Upload Financial Documents
+                    </button>
+                    <button onclick="showNotification('Auditor Panel: Professional auditing tools coming soon!')" class="bg-blue-500 hover:bg-blue-600 px-8 py-4 rounded-lg transition-colors font-semibold">
+                        👨‍💼 Auditor Panel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trips Page -->
+    <div id="trips-page" class="min-h-screen gradient-bg text-white" style="display: none;">
+        <header class="container mx-auto px-6 py-4 border-b border-slate-700">
+            <nav class="flex justify-between items-center">
+                <div class="flex items-center gap-3 cursor-pointer" onclick="showLanding()">
+                    <div class="text-xl font-bold text-emerald-400">ComplyAI</div>
+                </div>
+                <button onclick="showDashboard()" class="px-4 py-2 rounded hover:bg-slate-700">← Back to Dashboard</button>
+            </nav>
+        </header>
+
+        <div class="container mx-auto px-6 py-8">
+            <h1 class="text-4xl font-bold mb-8 text-center">✈️ Business Trip Reports</h1>
+
+            <div class="text-center mb-8">
+                <p class="text-xl text-gray-300 mb-8">Generate comprehensive business trip reports</p>
+
+                <button onclick="showNotification('Business trip report functionality will be available soon!')" class="bg-blue-500 hover:bg-blue-600 px-8 py-4 rounded-lg text-lg font-semibold">
+                    Create New Trip Report
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showLanding() {
+            document.getElementById('landing-page').style.display = 'block';
+            document.getElementById('dashboard-page').style.display = 'none';
+            document.getElementById('analysis-page').style.display = 'none';
+            document.getElementById('trips-page').style.display = 'none';
+        }
+
+        function showDashboard() {
+            document.getElementById('landing-page').style.display = 'none';
+            document.getElementById('dashboard-page').style.display = 'block';
+            document.getElementById('analysis-page').style.display = 'none';
+            document.getElementById('trips-page').style.display = 'none';
+        }
+
+        function showAnalysis() {
+            document.getElementById('landing-page').style.display = 'none';
+            document.getElementById('dashboard-page').style.display = 'none';
+            document.getElementById('analysis-page').style.display = 'block';
+            document.getElementById('trips-page').style.display = 'none';
+        }
+
+        function showTrips() {
+            document.getElementById('landing-page').style.display = 'none';
+            document.getElementById('dashboard-page').style.display = 'none';
+            document.getElementById('analysis-page').style.display = 'none';
+            document.getElementById('trips-page').style.display = 'block';
+        }
+
+        function showDemo() {
+            showNotification('Welcome to ComplyAI Demo!');
+            showDashboard();
+        }
+
+        function showNotification(message) {
+            alert(message);
+        }
     </script>
 </body>
 </html>
