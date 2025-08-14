@@ -111,6 +111,8 @@
             -webkit-text-stroke: 1px rgba(255, 255, 255, 0.1);
             transform: perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(50px);
             transform-style: preserve-3d;
+            line-height: 1.2;
+            padding-bottom: 0.2em;
         }
 
         @keyframes gradient-shift {
@@ -713,16 +715,20 @@ Submit to IT Park compliance department within 7 days.
                                     <div className="w-96 h-96 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 rounded-full blur-3xl animate-pulse-slow"></div>
                                 </div>
 
-                                <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black mb-8 text-center relative z-10" style={{
+                                <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black mb-12 text-center relative z-10" style={{
                                     perspective: '1000px',
-                                    transformStyle: 'preserve-3d'
+                                    transformStyle: 'preserve-3d',
+                                    lineHeight: '1.3',
+                                    paddingBottom: '0.3em'
                                 }}>
-                                    <span className="hero-title block mb-4 drop-shadow-2xl" style={{
+                                    <span className="hero-title block mb-6 drop-shadow-2xl" style={{
                                         textShadow: '0 0 30px rgba(16, 185, 129, 0.5), 0 0 10px rgba(255, 255, 255, 0.3), 1px 1px 2px rgba(255, 255, 255, 0.2), -1px -1px 2px rgba(255, 255, 255, 0.2), 0 0 50px rgba(16, 185, 129, 0.3), 2px 2px 4px rgba(0, 0, 0, 0.3)',
                                         WebkitTextStroke: '0.8px rgba(255, 255, 255, 0.3)',
                                         transform: 'perspective(1000px) rotateX(-5deg) translateZ(30px)',
                                         transformStyle: 'preserve-3d',
-                                        display: 'inline-block'
+                                        display: 'inline-block',
+                                        lineHeight: '1.2',
+                                        paddingBottom: '0.2em'
                                     }}>{t.title}</span>
                                     <div className="flex justify-center items-center gap-6 mt-6">
                                         <div className="h-2 w-24 sm:w-32 bg-gradient-to-r from-emerald-400 to-blue-500 rounded-full animate-pulse-slow shadow-lg"></div>
