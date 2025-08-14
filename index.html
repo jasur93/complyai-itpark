@@ -21,6 +21,95 @@
         .gradient-bg {
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 70%, #064e3b 100%);
         }
+
+        /* Enhanced animations and effects */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(16, 185, 129, 0.6); }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .animate-pulse-slow {
+            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        .animate-glow {
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        .animate-slide-up {
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        .animate-bounce-in {
+            animation: bounceIn 0.6s ease-out;
+        }
+
+        .pricing-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-title {
+            background: linear-gradient(135deg, #10b981, #3b82f6, #8b5cf6);
+            background-size: 300% 300%;
+            animation: gradient-shift 4s ease infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
     </style>
 </head>
 <body>
@@ -251,6 +340,24 @@
             };
 
             // Business Trip Functions
+            // Functional button handlers
+            const startFreeTrial = () => {
+                addNotification('success', 'Welcome to ComplyAI Free Trial! Redirecting to dashboard...');
+                setTimeout(() => {
+                    setCurrentView('analysis');
+                }, 1500);
+            };
+
+            const watchDemo = () => {
+                addNotification('info', 'Starting ComplyAI Demo Tour...');
+                setTimeout(() => {
+                    setCurrentView('dashboard');
+                    setTimeout(() => {
+                        addNotification('info', 'Demo: This is your main dashboard with all services');
+                    }, 1000);
+                }, 1000);
+            };
+
             const downloadOfficialForm = () => {
                 // Create a sample business trip form for demo
                 const formContent = `
@@ -369,23 +476,71 @@ Submit to IT Park compliance department within 7 days.
                         </nav>
                     </header>
 
-                    <section className="container mx-auto px-6 py-20 text-center">
-                        <h1 className="text-6xl font-bold mb-6">
-                            <span className="text-emerald-400">{t.title}</span>
-                        </h1>
-                        <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
-                            {t.subtitle}
-                        </p>
-                        <div className="flex gap-4 justify-center">
-                            <button
-                                onClick={() => setCurrentView('dashboard')}
-                                className="bg-emerald-500 hover:bg-emerald-600 px-8 py-4 rounded-lg text-lg font-semibold transition-colors"
-                            >
-                                {t.startFreeTrial}
-                            </button>
-                            <button className="border border-emerald-500 hover:bg-emerald-500 px-8 py-4 rounded-lg text-lg font-semibold transition-colors">
-                                {t.watchDemo}
-                            </button>
+                    <section className="container mx-auto px-6 py-20 text-center relative overflow-hidden">
+                        {/* Animated background elements */}
+                        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                            <div className="absolute top-20 left-10 w-20 h-20 bg-emerald-500/10 rounded-full animate-float"></div>
+                            <div className="absolute top-40 right-20 w-16 h-16 bg-blue-500/10 rounded-full animate-float" style={{animationDelay: '2s'}}></div>
+                            <div className="absolute bottom-20 left-1/4 w-12 h-12 bg-purple-500/10 rounded-full animate-float" style={{animationDelay: '4s'}}></div>
+                        </div>
+
+                        <div className="relative z-10">
+                            <div className="animate-slide-up">
+                                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6">
+                                    <span className="hero-title block mb-2">{t.title}</span>
+                                    <div className="flex justify-center items-center gap-4 mt-4">
+                                        <div className="h-1 w-20 bg-gradient-to-r from-emerald-400 to-blue-500 rounded animate-pulse-slow"></div>
+                                        <span className="text-2xl animate-bounce-in">🚀</span>
+                                        <div className="h-1 w-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded animate-pulse-slow"></div>
+                                    </div>
+                                </h1>
+                            </div>
+
+                            <div className="animate-slide-up" style={{animationDelay: '0.3s'}}>
+                                <p className="text-lg sm:text-xl md:text-2xl text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed">
+                                    <span className="bg-gradient-to-r from-emerald-400 to-blue-500 bg-clip-text text-transparent font-semibold">
+                                        {t.subtitle}
+                                    </span>
+                                </p>
+                            </div>
+
+                            <div className="animate-slide-up flex flex-col sm:flex-row gap-4 justify-center items-center" style={{animationDelay: '0.6s'}}>
+                                <button
+                                    onClick={startFreeTrial}
+                                    className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 transform hover:scale-105 animate-glow shadow-lg"
+                                >
+                                    <span className="flex items-center gap-2">
+                                        🎯 {t.startFreeTrial}
+                                    </span>
+                                </button>
+                                <button
+                                    onClick={watchDemo}
+                                    className="border-2 border-emerald-500 hover:bg-emerald-500 px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 transform hover:scale-105 backdrop-blur-sm"
+                                >
+                                    <span className="flex items-center gap-2">
+                                        🎬 {t.watchDemo}
+                                    </span>
+                                </button>
+                            </div>
+
+                            {/* Trust indicators */}
+                            <div className="mt-12 animate-slide-up" style={{animationDelay: '0.9s'}}>
+                                <p className="text-sm text-gray-400 mb-4">Trusted by IT Park resident companies</p>
+                                <div className="flex justify-center items-center gap-8 opacity-60">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-emerald-400">✓</span>
+                                        <span className="text-sm">AI-Powered</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-emerald-400">✓</span>
+                                        <span className="text-sm">IT Park Compliant</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-emerald-400">✓</span>
+                                        <span className="text-sm">Secure</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </section>
 
@@ -432,50 +587,130 @@ Submit to IT Park compliance department within 7 days.
                             <p className="text-xl text-gray-300">{t.choosePlanDesc}</p>
                         </div>
 
-                        <div className="grid md:grid-cols-3 gap-8">
-                            <div className="p-8 rounded-xl border bg-slate-800/30 border-slate-700 text-center">
-                                <h4 className="text-xl font-semibold mb-4 text-blue-400">{t.smallBusiness}</h4>
-                                <div className="text-4xl font-bold mb-4">$19<span className="text-lg text-gray-400">/month</span></div>
-                                <ul className="text-left space-y-2 text-gray-300 mb-6">
-                                    <li>✅ Basic AI Analysis</li>
-                                    <li>✅ Trip Report Processing</li>
-                                    <li>✅ Up to 50 documents/month</li>
-                                    <li>✅ Email Support</li>
-                                </ul>
-                                <button className="w-full py-3 px-6 rounded-lg font-semibold bg-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white transition-colors">
-                                    Select Plan
-                                </button>
-                            </div>
-
-                            <div className="p-8 rounded-xl border bg-emerald-500/10 border-emerald-500 text-center relative">
-                                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-emerald-500 text-white px-4 py-1 rounded-full text-sm">
-                                    Most Popular
+                        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                            {/* Small Business Plan */}
+                            <div className="pricing-card p-8 rounded-2xl border bg-slate-800/30 border-slate-700 text-center relative overflow-hidden animate-slide-up">
+                                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent"></div>
+                                <div className="relative z-10">
+                                    <div className="text-4xl mb-4 animate-bounce-in">💼</div>
+                                    <h4 className="text-2xl font-bold mb-4 text-blue-400">{t.smallBusiness}</h4>
+                                    <div className="mb-6">
+                                        <div className="text-5xl font-bold text-blue-400 mb-2">$19</div>
+                                        <div className="text-gray-400">/month</div>
+                                        <div className="text-sm text-emerald-400 font-semibold">Save 60% vs Enterprise</div>
+                                    </div>
+                                    <ul className="text-left space-y-3 text-gray-300 mb-8">
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-blue-400">✅</span>
+                                            <span>Basic AI Analysis</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-blue-400">✅</span>
+                                            <span>Trip Report Processing</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-blue-400">✅</span>
+                                            <span>Up to 50 documents/month</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-blue-400">✅</span>
+                                            <span>Email Support</span>
+                                        </li>
+                                    </ul>
+                                    <button
+                                        onClick={() => addNotification('success', 'Small Business plan selected! Contact us to get started.')}
+                                        className="w-full py-4 px-6 rounded-xl font-bold bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white transition-all duration-300 transform hover:scale-105 shadow-lg"
+                                    >
+                                        Choose Small Business
+                                    </button>
                                 </div>
-                                <h4 className="text-xl font-semibold mb-4 text-emerald-400">{t.mediumBusiness}</h4>
-                                <div className="text-4xl font-bold mb-4">$49<span className="text-lg text-gray-400">/month</span></div>
-                                <ul className="text-left space-y-2 text-gray-300 mb-6">
-                                    <li>✅ Advanced AI Analysis</li>
-                                    <li>✅ Unlimited Documents</li>
-                                    <li>✅ E-Signature Integration</li>
-                                    <li>✅ Priority Support</li>
-                                </ul>
-                                <button className="w-full py-3 px-6 rounded-lg font-semibold bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white transition-colors">
-                                    Select Plan
-                                </button>
                             </div>
 
-                            <div className="p-8 rounded-xl border bg-slate-800/30 border-slate-700 text-center">
-                                <h4 className="text-xl font-semibold mb-4 text-purple-400">{t.largeBusiness}</h4>
-                                <div className="text-4xl font-bold mb-4">$99<span className="text-lg text-gray-400">/month</span></div>
-                                <ul className="text-left space-y-2 text-gray-300 mb-6">
-                                    <li>✅ Enterprise AI Features</li>
-                                    <li>✅ Full API Access</li>
-                                    <li>✅ White-label Solution</li>
-                                    <li>✅ Dedicated Support</li>
-                                </ul>
-                                <button className="w-full py-3 px-6 rounded-lg font-semibold bg-purple-500/20 text-purple-400 hover:bg-purple-500 hover:text-white transition-colors">
-                                    Select Plan
-                                </button>
+                            {/* Medium Business Plan - Most Popular */}
+                            <div className="pricing-card p-8 rounded-2xl border bg-emerald-500/10 border-emerald-500 text-center relative overflow-hidden animate-slide-up transform scale-105" style={{animationDelay: '0.2s'}}>
+                                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent"></div>
+                                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-6 py-2 rounded-full text-sm font-bold animate-pulse-slow">
+                                    🔥 Most Popular
+                                </div>
+                                <div className="relative z-10">
+                                    <div className="text-4xl mb-4 animate-bounce-in" style={{animationDelay: '0.3s'}}>🚀</div>
+                                    <h4 className="text-2xl font-bold mb-4 text-emerald-400">{t.mediumBusiness}</h4>
+                                    <div className="mb-6">
+                                        <div className="text-5xl font-bold text-emerald-400 mb-2">$49</div>
+                                        <div className="text-gray-400">/month</div>
+                                        <div className="text-sm text-yellow-400 font-semibold">⭐ Best Value</div>
+                                    </div>
+                                    <ul className="text-left space-y-3 text-gray-300 mb-8">
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-emerald-400">✅</span>
+                                            <span>Advanced AI Analysis</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-emerald-400">✅</span>
+                                            <span>Unlimited Documents</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-emerald-400">✅</span>
+                                            <span>E-Signature Integration</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-emerald-400">✅</span>
+                                            <span>Priority Support</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-emerald-400">✅</span>
+                                            <span>Audit Analysis</span>
+                                        </li>
+                                    </ul>
+                                    <button
+                                        onClick={() => addNotification('success', 'Medium Business plan selected! Most popular choice. Contact us to get started.')}
+                                        className="w-full py-4 px-6 rounded-xl font-bold bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white transition-all duration-300 transform hover:scale-105 shadow-xl animate-glow"
+                                    >
+                                        Choose Medium Business
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Large Business Plan */}
+                            <div className="pricing-card p-8 rounded-2xl border bg-slate-800/30 border-slate-700 text-center relative overflow-hidden animate-slide-up" style={{animationDelay: '0.4s'}}>
+                                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent"></div>
+                                <div className="relative z-10">
+                                    <div className="text-4xl mb-4 animate-bounce-in" style={{animationDelay: '0.5s'}}>🏢</div>
+                                    <h4 className="text-2xl font-bold mb-4 text-purple-400">{t.largeBusiness}</h4>
+                                    <div className="mb-6">
+                                        <div className="text-5xl font-bold text-purple-400 mb-2">$99</div>
+                                        <div className="text-gray-400">/month</div>
+                                        <div className="text-sm text-purple-400 font-semibold">Enterprise Grade</div>
+                                    </div>
+                                    <ul className="text-left space-y-3 text-gray-300 mb-8">
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-purple-400">✅</span>
+                                            <span>Enterprise AI Features</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-purple-400">✅</span>
+                                            <span>Full API Access</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-purple-400">✅</span>
+                                            <span>White-label Solution</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-purple-400">✅</span>
+                                            <span>Dedicated Support</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-purple-400">✅</span>
+                                            <span>Custom Integration</span>
+                                        </li>
+                                    </ul>
+                                    <button
+                                        onClick={() => addNotification('success', 'Large Business plan selected! Enterprise solution. Contact us to get started.')}
+                                        className="w-full py-4 px-6 rounded-xl font-bold bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white transition-all duration-300 transform hover:scale-105 shadow-lg"
+                                    >
+                                        Choose Large Business
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -1047,6 +1282,107 @@ Submit to IT Park compliance department within 7 days.
                                 <div className="bg-slate-800/50 p-3 rounded">
                                     <strong className="text-emerald-400">Approval Status:</strong> Email notification sent
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Dashboard View for Demo
+        if (currentView === 'dashboard') {
+            return (
+                <div className="min-h-screen gradient-bg text-white">
+                    <NotificationSystem />
+
+                    <header className="container mx-auto px-6 py-4 border-b border-slate-700">
+                        <nav className="flex justify-between items-center">
+                            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentView('landing')}>
+                                <svg width="32" height="32" viewBox="0 0 100 100" className="flex-shrink-0">
+                                    <defs>
+                                        <linearGradient id="logoGradientDash" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stopColor="#10b981" />
+                                            <stop offset="100%" stopColor="#059669" />
+                                        </linearGradient>
+                                    </defs>
+                                    <path d="M20 15 C30 10, 45 12, 55 20 C65 28, 75 40, 80 55 C82 62, 80 68, 75 72 C70 76, 62 78, 55 78 L50 78 C42 78, 35 76, 30 72 L25 68 C18 62, 15 55, 14 48 C13 41, 15 34, 20 28 Z" fill="url(#logoGradientDash)" />
+                                    <path d="M25 48 L35 58 L65 28" stroke="white" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                                    <circle cx="75" cy="25" r="2" fill="#10b981" opacity="0.7" />
+                                    <circle cx="80" cy="75" r="1.5" fill="#10b981" opacity="0.5" />
+                                </svg>
+                                <div className="text-xl font-bold text-emerald-400">ComplyAI</div>
+                            </div>
+                            <button onClick={() => setCurrentView('landing')} className="px-4 py-2 rounded hover:bg-slate-700">← Back to Home</button>
+                        </nav>
+                    </header>
+
+                    <div className="container mx-auto px-6 py-8">
+                        <div className="text-center mb-12 animate-slide-up">
+                            <h1 className="text-4xl font-bold mb-4">🎯 Welcome to ComplyAI Dashboard</h1>
+                            <p className="text-xl text-gray-300">Choose your service to get started</p>
+                        </div>
+
+                        {/* Dashboard Stats */}
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                            <div className="bg-slate-800/30 p-6 rounded-xl border border-slate-700 text-center animate-bounce-in">
+                                <div className="text-3xl font-bold text-emerald-400">{analysisResults.length}</div>
+                                <div className="text-gray-300 text-sm">AI Analysis Reports</div>
+                            </div>
+                            <div className="bg-slate-800/30 p-6 rounded-xl border border-slate-700 text-center animate-bounce-in" style={{animationDelay: '0.1s'}}>
+                                <div className="text-3xl font-bold text-emerald-400">{uploadedDocuments.length}</div>
+                                <div className="text-gray-300 text-sm">Documents Analyzed</div>
+                            </div>
+                            <div className="bg-slate-800/30 p-6 rounded-xl border border-slate-700 text-center animate-bounce-in" style={{animationDelay: '0.2s'}}>
+                                <div className="text-3xl font-bold text-blue-400">3</div>
+                                <div className="text-gray-300 text-sm">Available Languages</div>
+                            </div>
+                            <div className="bg-slate-800/30 p-6 rounded-xl border border-slate-700 text-center animate-bounce-in" style={{animationDelay: '0.3s'}}>
+                                <div className="text-3xl font-bold text-yellow-400">24/7</div>
+                                <div className="text-gray-300 text-sm">System Availability</div>
+                            </div>
+                        </div>
+
+                        {/* Main Services */}
+                        <div className="grid lg:grid-cols-2 gap-12 max-w-4xl mx-auto">
+                            <div
+                                onClick={() => setCurrentView('analysis')}
+                                className="bg-slate-800/50 p-12 rounded-xl border border-slate-700 hover:border-emerald-500 transition-all duration-300 cursor-pointer transform hover:scale-105 animate-slide-up"
+                            >
+                                <div className="text-6xl mb-6 text-center animate-float">📊</div>
+                                <h3 className="text-2xl font-semibold mb-4 text-emerald-400 text-center">{t.financialAnalysis}</h3>
+                                <p className="text-gray-300 mb-6 text-center">{t.financialAnalysisDesc}</p>
+                                <div className="text-center">
+                                    <button className="bg-emerald-500 hover:bg-emerald-600 px-8 py-3 rounded-lg font-semibold">
+                                        Upload Documents
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div
+                                onClick={() => setCurrentView('trips')}
+                                className="bg-slate-800/50 p-12 rounded-xl border border-slate-700 hover:border-blue-500 transition-all duration-300 cursor-pointer transform hover:scale-105 animate-slide-up"
+                                style={{animationDelay: '0.2s'}}
+                            >
+                                <div className="text-6xl mb-6 text-center animate-float" style={{animationDelay: '2s'}}>✈️</div>
+                                <h3 className="text-2xl font-semibold mb-4 text-blue-400 text-center">{t.businessTrips}</h3>
+                                <p className="text-gray-300 mb-6 text-center">{t.businessTripsDesc}</p>
+                                <div className="text-center">
+                                    <button className="bg-blue-500 hover:bg-blue-600 px-8 py-3 rounded-lg font-semibold">
+                                        Create Report
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Demo Info */}
+                        <div className="mt-12 text-center animate-slide-up" style={{animationDelay: '0.4s'}}>
+                            <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-6 max-w-2xl mx-auto">
+                                <div className="text-3xl mb-4">🎬</div>
+                                <h3 className="text-xl font-semibold mb-2 text-blue-400">Demo Mode Active</h3>
+                                <p className="text-gray-300">
+                                    You're currently in demo mode. Click on any service above to explore ComplyAI's features.
+                                    All data shown is for demonstration purposes.
+                                </p>
                             </div>
                         </div>
                     </div>
