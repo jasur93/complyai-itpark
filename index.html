@@ -125,6 +125,9 @@
             const [analysisResults, setAnalysisResults] = useState([]);
             const [selectedAnalysis, setSelectedAnalysis] = useState(null);
             const [notifications, setNotifications] = useState([]);
+            const [showAuditorPanel, setShowAuditorPanel] = useState(false);
+            const [auditorCriteria, setAuditorCriteria] = useState([]);
+            const [newCriterion, setNewCriterion] = useState({ name: '', description: '', standard: 'UZ', priority: 'medium' });
 
             // Multi-language translations
             const translations = {
@@ -237,10 +240,14 @@
 
                         setTimeout(() => {
                             setUploadedDocuments(prev => prev.map(d =>
-                                d.id === doc.id ? { ...d, status: 'Analyzed' } : d
+                                d.id === doc.id ? { ...d, status: auditorCriteria.length > 0 ? 'Enhanced Analysis Complete' : 'Analyzed' } : d
                             ));
-                            generateAIAnalysis(doc);
-                            addNotification('success', `AI analysis completed for ${doc.name}`);
+                            if (auditorCriteria.length > 0) {
+                                runEnhancedAnalysis(doc);
+                            } else {
+                                generateAIAnalysis(doc);
+                                addNotification('success', `AI analysis completed for ${doc.name}`);
+                            }
                         }, 3000);
                     }, 1000 + index * 500);
                 });
@@ -265,16 +272,18 @@
             };
 
             const generateAIAnalysis = (document) => {
-                const analysisTypes = ['Financial Audit', 'Compliance Audit', 'Risk Assessment', 'Tax Audit', 'Internal Audit'];
+                const analysisTypes = ['Financial Audit (UZ Standards)', 'Compliance Audit (IT Park)', 'Risk Assessment (UZ)', 'Tax Audit (Uzbekistan)', 'Internal Audit (UZ Standards)'];
                 const auditFindings = [
-                    { type: 'success', message: 'Revenue recognition follows IFRS accounting standards', severity: 'low', auditArea: 'Revenue Audit' },
-                    { type: 'warning', message: 'Unusual expense pattern in travel category requires review', severity: 'medium', auditArea: 'Expense Audit' },
-                    { type: 'error', message: 'Potential duplicate transactions detected in accounts payable', severity: 'high', auditArea: 'Transaction Audit' },
-                    { type: 'success', message: 'Cash flow management is optimal and well-documented', severity: 'low', auditArea: 'Cash Flow Audit' },
-                    { type: 'warning', message: 'Budget variance exceeds 10% threshold in Q3', severity: 'medium', auditArea: 'Budget Audit' },
-                    { type: 'success', message: 'Internal controls are functioning effectively', severity: 'low', auditArea: 'Control Audit' },
-                    { type: 'error', message: 'Missing supporting documentation for large transactions', severity: 'high', auditArea: 'Documentation Audit' },
-                    { type: 'warning', message: 'Inventory valuation methods need standardization', severity: 'medium', auditArea: 'Asset Audit' }
+                    { type: 'success', message: 'Revenue recognition complies with Uzbekistan National Accounting Standards (UzNAS)', severity: 'low', auditArea: 'Revenue Audit (UZ)' },
+                    { type: 'warning', message: 'Travel expenses require additional documentation per UZ audit standards', severity: 'medium', auditArea: 'Expense Audit (UZ)' },
+                    { type: 'error', message: 'Transaction documentation missing required UZ tax authority stamps', severity: 'high', auditArea: 'UZ Tax Compliance' },
+                    { type: 'success', message: 'Cash flow reporting meets Central Bank of Uzbekistan requirements', severity: 'low', auditArea: 'UZ Banking Standards' },
+                    { type: 'warning', message: 'VAT calculations need review per Uzbekistan Tax Code', severity: 'medium', auditArea: 'UZ Tax Audit' },
+                    { type: 'success', message: 'Internal controls align with Uzbekistan Corporate Governance Code', severity: 'low', auditArea: 'UZ Governance Audit' },
+                    { type: 'error', message: 'Foreign currency transactions lack required NBU approval documentation', severity: 'high', auditArea: 'UZ Currency Control' },
+                    { type: 'warning', message: 'Asset valuation methods require alignment with UZ Ministry of Finance guidelines', severity: 'medium', auditArea: 'UZ Asset Standards' },
+                    { type: 'success', message: 'IT Park resident company benefits properly documented and applied', severity: 'low', auditArea: 'IT Park Compliance' },
+                    { type: 'warning', message: 'Employee benefit calculations need review per UZ Labor Code', severity: 'medium', auditArea: 'UZ Labor Compliance' }
                 ];
 
                 const newAnalysis = {
@@ -356,6 +365,97 @@
                         addNotification('info', 'Demo: This is your main dashboard with all services');
                     }, 1000);
                 }, 1000);
+            };
+
+            // Auditor Panel Functions
+            const addAuditorCriterion = () => {
+                if (!newCriterion.name || !newCriterion.description) {
+                    addNotification('error', 'Please fill in both criterion name and description');
+                    return;
+                }
+
+                const criterion = {
+                    id: auditorCriteria.length + 1,
+                    name: newCriterion.name,
+                    description: newCriterion.description,
+                    standard: newCriterion.standard,
+                    priority: newCriterion.priority,
+                    dateAdded: new Date().toISOString().split('T')[0],
+                    status: 'active'
+                };
+
+                setAuditorCriteria([...auditorCriteria, criterion]);
+                setNewCriterion({ name: '', description: '', standard: 'UZ', priority: 'medium' });
+                addNotification('success', `Auditor criterion "${criterion.name}" added successfully for ${criterion.standard} standards`);
+            };
+
+            const removeAuditorCriterion = (id) => {
+                setAuditorCriteria(auditorCriteria.filter(c => c.id !== id));
+                addNotification('info', 'Auditor criterion removed');
+            };
+
+            const runEnhancedAnalysis = (document) => {
+                if (auditorCriteria.length === 0) {
+                    generateAIAnalysis(document);
+                    return;
+                }
+
+                // Enhanced analysis with custom auditor criteria
+                const customFindings = auditorCriteria.map(criterion => ({
+                    type: Math.random() > 0.7 ? 'success' : Math.random() > 0.4 ? 'warning' : 'error',
+                    message: `${criterion.name}: ${getRandomAnalysisResult(criterion)}`,
+                    severity: criterion.priority,
+                    auditArea: `Custom ${criterion.standard} Standards`,
+                    criterionId: criterion.id
+                }));
+
+                const enhancedAnalysis = {
+                    id: analysisResults.length + 1,
+                    documentName: document.name,
+                    analysisType: `Enhanced AI Analysis with Custom ${auditorCriteria[0]?.standard || 'UZ'} Criteria`,
+                    score: Math.floor(Math.random() * 15) + 85,
+                    findings: [...customFindings, ...auditFindings.slice(0, 3)],
+                    recommendations: [
+                        'Address custom auditor criteria findings',
+                        'Implement automated compliance monitoring for UZ standards',
+                        'Review documentation procedures per Uzbekistan audit requirements',
+                        'Enhance internal controls for IT Park compliance'
+                    ],
+                    customCriteriaUsed: auditorCriteria.length,
+                    auditAreas: [
+                        { area: 'Custom UZ Standards', status: 'Enhanced Review', issues: customFindings.filter(f => f.type === 'error').length },
+                        { area: 'UZ Tax Compliance', status: 'Compliant', issues: 0 },
+                        { area: 'IT Park Requirements', status: 'Satisfactory', issues: 1 }
+                    ],
+                    complianceIssues: [
+                        'Uzbekistan National Accounting Standards: Compliant with custom criteria',
+                        'IT Park regulations: Fully compliant',
+                        'UZ Tax Code: Minor documentation improvements needed'
+                    ],
+                    financialMetrics: {
+                        revenueGrowth: (Math.random() * 20 - 5).toFixed(1),
+                        expenseRatio: (Math.random() * 30 + 50).toFixed(1),
+                        profitMargin: (Math.random() * 40 + 10).toFixed(1),
+                        cashFlow: Math.random() > 0.3 ? 'Positive' : 'Negative'
+                    },
+                    auditScore: Math.floor(Math.random() * 10) + 90,
+                    riskLevel: Math.random() > 0.8 ? 'Low' : Math.random() > 0.5 ? 'Medium' : 'High',
+                    processingTime: `${Math.floor(Math.random() * 3) + 2}.${Math.floor(Math.random() * 9)}s`,
+                    lastUpdated: new Date().toISOString().split('T')[0]
+                };
+
+                setAnalysisResults([enhancedAnalysis, ...analysisResults]);
+                addNotification('success', `Enhanced analysis completed using ${auditorCriteria.length} custom UZ audit criteria`);
+            };
+
+            const getRandomAnalysisResult = (criterion) => {
+                const results = [
+                    `Compliant with ${criterion.standard} standards and specified requirements`,
+                    `Minor deviations detected, review recommended per ${criterion.standard} guidelines`,
+                    `Excellent compliance, exceeds ${criterion.standard} audit expectations`,
+                    `Documentation gaps identified, requires ${criterion.standard} standard alignment`
+                ];
+                return results[Math.floor(Math.random() * results.length)];
             };
 
             const downloadOfficialForm = () => {
@@ -629,8 +729,10 @@ Submit to IT Park compliance department within 7 days.
                             {/* Medium Business Plan - Most Popular */}
                             <div className="pricing-card p-8 rounded-2xl border bg-emerald-500/10 border-emerald-500 text-center relative overflow-hidden animate-slide-up transform scale-105" style={{animationDelay: '0.2s'}}>
                                 <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent"></div>
-                                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-6 py-2 rounded-full text-sm font-bold animate-pulse-slow">
-                                    🔥 Most Popular
+                                <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-6 py-3 rounded-full text-sm font-bold shadow-lg z-20 border-2 border-white">
+                                    <span className="flex items-center gap-1">
+                                        🔥 <span className="text-white font-extrabold">Most Popular</span>
+                                    </span>
                                 </div>
                                 <div className="relative z-10">
                                     <div className="text-4xl mb-4 animate-bounce-in" style={{animationDelay: '0.3s'}}>🚀</div>
@@ -772,6 +874,12 @@ Submit to IT Park compliance department within 7 days.
                                 >
                                     📁 Upload Financial Documents
                                 </label>
+                                <button
+                                    onClick={() => setShowAuditorPanel(!showAuditorPanel)}
+                                    className="bg-blue-500 hover:bg-blue-600 px-6 py-3 rounded-lg transition-colors flex items-center gap-2 font-semibold justify-center"
+                                >
+                                    👨‍💼 Auditor Panel {auditorCriteria.length > 0 && `(${auditorCriteria.length})`}
+                                </button>
                                 {(uploadedDocuments.length > 0 || analysisResults.length > 0) && (
                                     <button
                                         onClick={clearPreviousFiles}
@@ -782,6 +890,104 @@ Submit to IT Park compliance department within 7 days.
                                 )}
                             </div>
                         </div>
+
+                        {/* Auditor Panel */}
+                        {showAuditorPanel && (
+                            <div className="mb-8 bg-slate-800/50 p-6 rounded-xl border border-blue-500/30 animate-slide-up">
+                                <h3 className="text-2xl font-semibold mb-6 text-blue-400 flex items-center gap-2">
+                                    👨‍💼 Auditor Custom Criteria Panel
+                                    <span className="text-sm bg-blue-500/20 px-2 py-1 rounded">Uzbekistan Standards Enhanced</span>
+                                </h3>
+
+                                <div className="bg-slate-700/30 p-4 rounded-lg mb-6">
+                                    <h4 className="font-semibold mb-4">Add Custom Audit Criterion</h4>
+                                    <div className="grid md:grid-cols-4 gap-4 mb-4">
+                                        <input
+                                            type="text"
+                                            placeholder="Criterion Name (e.g., UZ Revenue Recognition)"
+                                            value={newCriterion.name}
+                                            onChange={(e) => setNewCriterion({...newCriterion, name: e.target.value})}
+                                            className="bg-slate-600 border border-slate-500 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                                        />
+                                        <select
+                                            value={newCriterion.standard}
+                                            onChange={(e) => setNewCriterion({...newCriterion, standard: e.target.value})}
+                                            className="bg-slate-600 border border-slate-500 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                                        >
+                                            <option value="UZ">🇺🇿 UZ Standards</option>
+                                            <option value="IFRS">🌍 IFRS</option>
+                                            <option value="IT_PARK">🏢 IT Park</option>
+                                            <option value="CUSTOM">⚙️ Custom</option>
+                                        </select>
+                                        <select
+                                            value={newCriterion.priority}
+                                            onChange={(e) => setNewCriterion({...newCriterion, priority: e.target.value})}
+                                            className="bg-slate-600 border border-slate-500 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                                        >
+                                            <option value="low">Low Priority</option>
+                                            <option value="medium">Medium Priority</option>
+                                            <option value="high">High Priority</option>
+                                            <option value="critical">Critical</option>
+                                        </select>
+                                        <button
+                                            onClick={addAuditorCriterion}
+                                            className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg font-semibold transition-colors"
+                                        >
+                                            Add Criterion
+                                        </button>
+                                    </div>
+                                    <textarea
+                                        placeholder="Detailed description of audit criterion (e.g., Check compliance with UZ National Accounting Standards for revenue recognition)"
+                                        value={newCriterion.description}
+                                        onChange={(e) => setNewCriterion({...newCriterion, description: e.target.value})}
+                                        className="w-full bg-slate-600 border border-slate-500 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 h-20 resize-none"
+                                    />
+                                </div>
+
+                                {/* Current Criteria */}
+                                {auditorCriteria.length > 0 ? (
+                                    <div>
+                                        <h4 className="font-semibold mb-4">Active Auditor Criteria ({auditorCriteria.length})</h4>
+                                        <div className="space-y-3 max-h-60 overflow-y-auto">
+                                            {auditorCriteria.map(criterion => (
+                                                <div key={criterion.id} className="bg-slate-700/50 p-4 rounded-lg border border-slate-600">
+                                                    <div className="flex justify-between items-start mb-2">
+                                                        <div className="flex-1">
+                                                            <h5 className="font-semibold text-blue-400">{criterion.name}</h5>
+                                                            <p className="text-xs text-gray-400 mt-1">Standard: {criterion.standard} • Priority: {criterion.priority}</p>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className={`px-2 py-1 rounded text-xs ${
+                                                                criterion.priority === 'critical' ? 'bg-red-500/20 text-red-400' :
+                                                                criterion.priority === 'high' ? 'bg-orange-500/20 text-orange-400' :
+                                                                criterion.priority === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
+                                                                'bg-green-500/20 text-green-400'
+                                                            }`}>
+                                                                {criterion.priority}
+                                                            </span>
+                                                            <button
+                                                                onClick={() => removeAuditorCriterion(criterion.id)}
+                                                                className="text-red-400 hover:text-red-300 text-sm"
+                                                            >
+                                                                ✕
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <p className="text-sm text-gray-300">{criterion.description}</p>
+                                                    <p className="text-xs text-gray-500 mt-2">Added: {criterion.dateAdded}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="text-center py-8 text-gray-400">
+                                        <div className="text-4xl mb-4">👨‍💼</div>
+                                        <p>No custom audit criteria added yet</p>
+                                        <p className="text-sm">Add criteria above to enhance AI analysis with Uzbekistan standards</p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                         {/* File Upload Results */}
                         <div className="grid lg:grid-cols-2 gap-8">
