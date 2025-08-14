@@ -88,6 +88,14 @@
             const [showTripForm, setShowTripForm] = useState(false);
             const [selectedPlan, setSelectedPlan] = useState(null);
             const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+            const [showAuditorPanel, setShowAuditorPanel] = useState(false);
+            const [auditorCriteria, setAuditorCriteria] = useState({
+                complianceStandards: '',
+                riskThreshold: 'medium',
+                focusAreas: [],
+                customRules: '',
+                reportingRequirements: ''
+            });
             const [tripForm, setTripForm] = useState({
                 destination: '',
                 purpose: '',
@@ -569,6 +577,26 @@ Date: __________________________
             const selectPlan = (planName, price) => {
                 setSelectedPlan({ name: planName, price: price });
                 addNotification('success', `${planName} plan selected! Price: $${price}/month. Contact us to get started.`);
+            };
+
+            const viewTrendAnalysis = () => {
+                addNotification('info', 'Trend Analysis: Detailed revenue patterns and seasonal forecasts available in full report');
+            };
+
+            const viewOptimization = () => {
+                addNotification('info', 'Optimization Report: Cost reduction opportunities identified. Download detailed recommendations.');
+            };
+
+            const viewAutomation = () => {
+                addNotification('info', 'Automation Suggestions: 15 processes ready for automation. Implementation guide available.');
+            };
+
+            const viewFutureForecast = () => {
+                addNotification('info', 'Future Forecast: Q1 2025 projections show 15% growth potential. View detailed predictions.');
+            };
+
+            const viewRiskAlert = () => {
+                addNotification('warning', 'Risk Alert: Cash flow monitoring recommended for December. Set up automated alerts.');
             };
 
             if (currentView === 'landing') {
@@ -1421,11 +1449,11 @@ Date: __________________________
                         </nav>
                     </header>
 
-                    <div className="container mx-auto px-6 py-8">
-                        <div className="mb-8">
-                            <h1 className="text-4xl font-bold mb-4">📊 AI Analysis Report</h1>
-                            <div className="bg-gradient-to-r from-emerald-500/10 to-blue-500/10 p-6 rounded-xl border border-emerald-500/30 mb-6">
-                                <div className="grid md:grid-cols-4 gap-4 text-center">
+                    <div className="container mx-auto px-4 md:px-6 py-6 md:py-8">
+                        <div className="mb-6 md:mb-8">
+                            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-center">📊 AI Analysis Report</h1>
+                            <div className="bg-gradient-to-r from-emerald-500/10 to-blue-500/10 p-4 md:p-6 rounded-xl border border-emerald-500/30 mb-4 md:mb-6">
+                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 text-center">
                                     <div>
                                         <div className="text-2xl font-bold text-emerald-400">{selectedAnalysis?.score}%</div>
                                         <div className="text-sm text-gray-400">Compliance Score</div>
@@ -1637,23 +1665,71 @@ Date: __________________________
                                 </div>
 
                                 {/* AI Insights */}
-                                <div className="lg:col-span-3 bg-gradient-to-r from-emerald-500/10 to-blue-500/10 p-6 rounded-xl border border-emerald-500/30">
-                                    <h3 className="text-xl font-semibold mb-4">🤖 AI Insights & Predictions</h3>
-                                    <div className="grid md:grid-cols-3 gap-6">
-                                        <div className="text-center">
-                                            <div className="text-3xl mb-2">📊</div>
-                                            <h4 className="font-semibold mb-2">Trend Analysis</h4>
-                                            <p className="text-sm text-gray-400">Revenue trending upward with seasonal patterns detected</p>
+                                <div className="col-span-1 md:col-span-2 lg:col-span-3 bg-gradient-to-r from-emerald-500/10 to-blue-500/10 p-4 md:p-6 rounded-xl border border-emerald-500/30">
+                                    <h3 className="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-center md:text-left">🤖 AI Insights & Predictions</h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                                        <div className="text-center bg-slate-800/30 p-4 rounded-lg border border-slate-600/50 hover:border-emerald-500/50 transition-all duration-300">
+                                            <div className="text-2xl md:text-3xl mb-2">📊</div>
+                                            <h4 className="font-semibold mb-2 text-sm md:text-base">Trend Analysis</h4>
+                                            <p className="text-xs md:text-sm text-gray-400 leading-relaxed mb-3">Revenue trending upward with seasonal patterns detected</p>
+                                            <button
+                                                onClick={viewTrendAnalysis}
+                                                className="bg-emerald-500/20 hover:bg-emerald-500 text-emerald-400 hover:text-white px-3 md:px-4 py-1 md:py-2 rounded text-xs md:text-sm transition-colors"
+                                            >
+                                                View Details
+                                            </button>
                                         </div>
-                                        <div className="text-center">
-                                            <div className="text-3xl mb-2">🎯</div>
-                                            <h4 className="font-semibold mb-2">Optimization</h4>
-                                            <p className="text-sm text-gray-400">Potential 8% cost reduction identified in operational expenses</p>
+                                        <div className="text-center bg-slate-800/30 p-4 rounded-lg border border-slate-600/50 hover:border-blue-500/50 transition-all duration-300">
+                                            <div className="text-2xl md:text-3xl mb-2">🎯</div>
+                                            <h4 className="font-semibold mb-2 text-sm md:text-base">Optimization</h4>
+                                            <p className="text-xs md:text-sm text-gray-400 leading-relaxed mb-3">Potential 8% cost reduction identified in operational expenses</p>
+                                            <button
+                                                onClick={viewOptimization}
+                                                className="bg-blue-500/20 hover:bg-blue-500 text-blue-400 hover:text-white px-3 md:px-4 py-1 md:py-2 rounded text-xs md:text-sm transition-colors"
+                                            >
+                                                View Report
+                                            </button>
                                         </div>
-                                        <div className="text-center">
-                                            <div className="text-3xl mb-2">⚡</div>
-                                            <h4 className="font-semibold mb-2">Automation</h4>
-                                            <p className="text-sm text-gray-400">15 manual processes can be automated to improve efficiency</p>
+                                        <div className="text-center bg-slate-800/30 p-4 rounded-lg border border-slate-600/50 hover:border-purple-500/50 transition-all duration-300 sm:col-span-2 lg:col-span-1">
+                                            <div className="text-2xl md:text-3xl mb-2">⚡</div>
+                                            <h4 className="font-semibold mb-2 text-sm md:text-base">Automation</h4>
+                                            <p className="text-xs md:text-sm text-gray-400 leading-relaxed mb-3">15 manual processes can be automated to improve efficiency</p>
+                                            <button
+                                                onClick={viewAutomation}
+                                                className="bg-purple-500/20 hover:bg-purple-500 text-purple-400 hover:text-white px-3 md:px-4 py-1 md:py-2 rounded text-xs md:text-sm transition-colors"
+                                            >
+                                                View Guide
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Additional AI Predictions */}
+                                    <div className="mt-4 md:mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+                                        <div className="bg-blue-500/10 p-3 md:p-4 rounded-lg border border-blue-500/30 hover:border-blue-500/50 transition-all duration-300">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <span className="text-lg">🔮</span>
+                                                <h5 className="font-semibold text-sm md:text-base">Future Forecast</h5>
+                                            </div>
+                                            <p className="text-xs md:text-sm text-gray-400 mb-3">Q1 2025 revenue projected to increase by 15% based on current trends</p>
+                                            <button
+                                                onClick={viewFutureForecast}
+                                                className="bg-blue-500/20 hover:bg-blue-500 text-blue-400 hover:text-white px-3 py-1 rounded text-xs transition-colors"
+                                            >
+                                                View Forecast
+                                            </button>
+                                        </div>
+                                        <div className="bg-purple-500/10 p-3 md:p-4 rounded-lg border border-purple-500/30 hover:border-purple-500/50 transition-all duration-300">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <span className="text-lg">🚨</span>
+                                                <h5 className="font-semibold text-sm md:text-base">Risk Alert</h5>
+                                            </div>
+                                            <p className="text-xs md:text-sm text-gray-400 mb-3">Monitor cash flow closely in December due to seasonal variations</p>
+                                            <button
+                                                onClick={viewRiskAlert}
+                                                className="bg-red-500/20 hover:bg-red-500 text-red-400 hover:text-white px-3 py-1 rounded text-xs transition-colors"
+                                            >
+                                                View Alert
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
