@@ -122,6 +122,69 @@
             </div>
         </section>
 
+        <!-- Pricing Section -->
+        <section class="container mx-auto px-6 py-20 border-t border-slate-700">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4">💎 Choose Your Plan</h2>
+                <p class="text-xl text-gray-300">Select the perfect plan for your business needs</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <!-- Small Business -->
+                <div id="plan-small" class="bg-slate-800/30 p-8 rounded-xl border border-slate-700 text-center transition-all duration-300 hover:border-blue-500 cursor-pointer" onclick="selectPlan('Small Business', 15)">
+                    <h4 class="text-xl font-semibold mb-4 text-blue-400">Small Business</h4>
+                    <div class="text-4xl font-bold mb-4">$15<span class="text-lg text-gray-400">/month</span></div>
+                    <ul class="text-left space-y-2 text-gray-300 mb-6">
+                        <li>✅ Basic AI Analysis</li>
+                        <li>✅ Trip Report Processing</li>
+                        <li>✅ Up to 50 documents/month</li>
+                        <li>✅ Email Support</li>
+                        <li>✅ Standard Templates</li>
+                    </ul>
+                    <button class="w-full py-3 px-6 rounded-lg font-semibold transition-colors bg-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white">
+                        Select Plan
+                    </button>
+                </div>
+
+                <!-- Medium Business -->
+                <div id="plan-medium" class="bg-emerald-500/10 p-8 rounded-xl border border-emerald-500 text-center relative transition-all duration-300 hover:bg-emerald-500/20 cursor-pointer" onclick="selectPlan('Medium Business', 35)">
+                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-emerald-500 text-white px-4 py-1 rounded-full text-sm">
+                        Most Popular
+                    </div>
+                    <h4 class="text-xl font-semibold mb-4 text-emerald-400">Medium Business</h4>
+                    <div class="text-4xl font-bold mb-4">$35<span class="text-lg text-gray-400">/month</span></div>
+                    <ul class="text-left space-y-2 text-gray-300 mb-6">
+                        <li>✅ Advanced AI Analysis</li>
+                        <li>✅ Unlimited Documents</li>
+                        <li>✅ E-Signature Integration</li>
+                        <li>✅ Custom Reports</li>
+                        <li>✅ Priority Support</li>
+                        <li>✅ Multi-user Access</li>
+                    </ul>
+                    <button class="w-full py-3 px-6 rounded-lg font-semibold transition-colors bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white">
+                        Select Plan
+                    </button>
+                </div>
+
+                <!-- Large Business -->
+                <div id="plan-large" class="bg-slate-800/30 p-8 rounded-xl border border-slate-700 text-center transition-all duration-300 hover:border-purple-500 cursor-pointer" onclick="selectPlan('Large Business', 75)">
+                    <h4 class="text-xl font-semibold mb-4 text-purple-400">Large Business</h4>
+                    <div class="text-4xl font-bold mb-4">$75<span class="text-lg text-gray-400">/month</span></div>
+                    <ul class="text-left space-y-2 text-gray-300 mb-6">
+                        <li>✅ Enterprise AI Features</li>
+                        <li>✅ API Access</li>
+                        <li>✅ Custom Integrations</li>
+                        <li>✅ Dedicated Support</li>
+                        <li>✅ Training & Consulting</li>
+                        <li>✅ White-label Options</li>
+                    </ul>
+                    <button class="w-full py-3 px-6 rounded-lg font-semibold transition-colors bg-purple-500/20 text-purple-400 hover:bg-purple-500 hover:text-white">
+                        Select Plan
+                    </button>
+                </div>
+            </div>
+        </section>
+
         <!-- Footer -->
         <footer class="container mx-auto px-6 py-12 border-t border-slate-700">
             <div class="text-center text-gray-400">
@@ -191,12 +254,74 @@
                 <p class="text-xl text-gray-300 mb-8">Upload your financial documents for AI-powered analysis</p>
 
                 <div class="flex flex-col sm:flex-row justify-center gap-4">
-                    <button onclick="showNotification('File upload functionality will be available soon!')" class="bg-emerald-500 hover:bg-emerald-600 px-8 py-4 rounded-lg text-lg font-semibold glow-effect">
+                    <input type="file" id="fileUpload" multiple accept=".pdf,.xlsx,.xls,.csv" style="display: none;" onchange="handleFileUpload(event)">
+                    <label for="fileUpload" class="bg-emerald-500 hover:bg-emerald-600 px-8 py-4 rounded-lg text-lg font-semibold glow-effect cursor-pointer">
                         📁 Upload Financial Documents
-                    </button>
-                    <button onclick="showNotification('Auditor Panel: Professional auditing tools coming soon!')" class="bg-blue-500 hover:bg-blue-600 px-8 py-4 rounded-lg transition-colors font-semibold">
+                    </label>
+                    <button onclick="toggleAuditorPanel()" class="bg-blue-500 hover:bg-blue-600 px-8 py-4 rounded-lg transition-colors font-semibold">
                         👨‍💼 Auditor Panel
                     </button>
+                    <button onclick="clearAllFiles()" id="clearButton" class="bg-red-500 hover:bg-red-600 px-6 py-4 rounded-lg transition-colors font-semibold" style="display: none;">
+                        🗑️ Clear All Files
+                    </button>
+                </div>
+            </div>
+
+            <!-- Auditor Panel -->
+            <div id="auditorPanel" class="mb-8 bg-slate-800/50 p-6 rounded-xl border border-blue-500/30" style="display: none;">
+                <h3 class="text-2xl font-semibold mb-6 text-blue-400 flex items-center gap-2">
+                    👨‍💼 Auditor Custom Criteria Panel
+                    <span class="text-sm bg-blue-500/20 px-2 py-1 rounded">OpenAI Enhanced</span>
+                </h3>
+
+                <div class="bg-slate-700/30 p-4 rounded-lg mb-6">
+                    <h4 class="font-semibold mb-4">Add Custom Analysis Criterion</h4>
+                    <div class="grid md:grid-cols-3 gap-4 mb-4">
+                        <input type="text" id="criterionName" placeholder="Criterion Name (e.g., Revenue Recognition)" class="bg-slate-600 border border-slate-500 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500">
+                        <select id="criterionPriority" class="bg-slate-600 border border-slate-500 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500">
+                            <option value="low">Low Priority</option>
+                            <option value="medium" selected>Medium Priority</option>
+                            <option value="high">High Priority</option>
+                            <option value="critical">Critical</option>
+                        </select>
+                        <button onclick="addAuditorCriterion()" class="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg font-semibold transition-colors">
+                            Add Criterion
+                        </button>
+                    </div>
+                    <textarea id="criterionDescription" placeholder="Detailed description of what to analyze (e.g., Check if revenue recognition follows IFRS standards)" class="w-full bg-slate-600 border border-slate-500 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 h-20 resize-none"></textarea>
+                </div>
+
+                <div id="criteriaList" class="space-y-3 max-h-60 overflow-y-auto"></div>
+
+                <div id="noCriteria" class="text-center py-8 text-gray-400">
+                    <div class="text-4xl mb-4">👨‍💼</div>
+                    <p>No custom criteria added yet</p>
+                    <p class="text-sm">Add criteria above to enhance AI analysis</p>
+                </div>
+            </div>
+
+            <!-- File Upload Results -->
+            <div class="grid lg:grid-cols-2 gap-8">
+                <div class="bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                    <h3 class="text-2xl font-semibold mb-4">Uploaded Documents</h3>
+                    <div id="uploadedFiles" class="space-y-4">
+                        <div class="text-center py-8 text-gray-400">
+                            <div class="text-4xl mb-4">📄</div>
+                            <p>No documents uploaded yet</p>
+                            <p class="text-sm">Upload financial documents to get AI analysis</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                    <h3 class="text-2xl font-semibold mb-4">Recent Analysis Results</h3>
+                    <div id="analysisResults" class="space-y-4">
+                        <div class="text-center py-8 text-gray-400">
+                            <div class="text-4xl mb-4">📊</div>
+                            <p>No analysis results yet</p>
+                            <p class="text-sm">Upload documents to see AI analysis</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -219,14 +344,85 @@
             <div class="text-center mb-8">
                 <p class="text-xl text-gray-300 mb-8">Generate comprehensive business trip reports</p>
 
-                <button onclick="showNotification('Business trip report functionality will be available soon!')" class="bg-blue-500 hover:bg-blue-600 px-8 py-4 rounded-lg text-lg font-semibold">
-                    Create New Trip Report
-                </button>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <button onclick="toggleTripForm()" class="bg-blue-500 hover:bg-blue-600 px-8 py-4 rounded-lg text-lg font-semibold">
+                        Create New Trip Report
+                    </button>
+                    <button onclick="downloadOfficialForm()" class="bg-emerald-500 hover:bg-emerald-600 px-8 py-4 rounded-lg text-lg font-semibold">
+                        📄 Download Official Form
+                    </button>
+                    <button onclick="clearAllReports()" id="clearReportsButton" class="bg-red-500 hover:bg-red-600 px-6 py-4 rounded-lg transition-colors font-semibold" style="display: none;">
+                        🗑️ Clear All Reports
+                    </button>
+                </div>
+            </div>
+
+            <!-- Trip Form -->
+            <div id="tripForm" class="mb-8 bg-slate-800/50 p-6 rounded-xl border border-blue-500/30" style="display: none;">
+                <h3 class="text-2xl font-semibold mb-6 text-blue-400">Business Trip Report Form</h3>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Destination</label>
+                        <input type="text" id="tripDestination" placeholder="e.g., Tashkent, Uzbekistan" class="w-full bg-slate-600 border border-slate-500 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Purpose</label>
+                        <input type="text" id="tripPurpose" placeholder="e.g., Client Meeting" class="w-full bg-slate-600 border border-slate-500 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Start Date</label>
+                        <input type="date" id="tripStartDate" class="w-full bg-slate-600 border border-slate-500 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">End Date</label>
+                        <input type="date" id="tripEndDate" class="w-full bg-slate-600 border border-slate-500 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <label class="block text-sm font-medium mb-2">Expenses</label>
+                    <div id="expensesList" class="space-y-2 mb-4"></div>
+                    <div class="flex gap-2">
+                        <input type="text" id="expenseDescription" placeholder="Expense description" class="flex-1 bg-slate-600 border border-slate-500 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500">
+                        <input type="number" id="expenseAmount" placeholder="Amount" class="w-32 bg-slate-600 border border-slate-500 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500">
+                        <button onclick="addExpense()" class="bg-emerald-500 hover:bg-emerald-600 px-4 py-2 rounded-lg font-semibold transition-colors">
+                            Add Expense
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex gap-4">
+                    <button onclick="submitTripReport()" class="bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded-lg font-semibold transition-colors">
+                        Submit Report
+                    </button>
+                    <button onclick="toggleTripForm()" class="bg-gray-500 hover:bg-gray-600 px-6 py-2 rounded-lg font-semibold transition-colors">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+
+            <!-- Trip Reports List -->
+            <div class="bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                <h3 class="text-2xl font-semibold mb-4">Submitted Trip Reports</h3>
+                <div id="tripReportsList" class="space-y-4">
+                    <div class="text-center py-8 text-gray-400">
+                        <div class="text-4xl mb-4">✈️</div>
+                        <p>No trip reports submitted yet</p>
+                        <p class="text-sm">Create a new trip report to get started</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
+        // Global variables
+        let uploadedDocuments = [];
+        let analysisResults = [];
+        let auditorCriteria = [];
+
+        // Navigation functions
         function showLanding() {
             document.getElementById('landing-page').style.display = 'block';
             document.getElementById('dashboard-page').style.display = 'none';
@@ -262,6 +458,576 @@
 
         function showNotification(message) {
             alert(message);
+        }
+
+        // Auditor Panel functions
+        function toggleAuditorPanel() {
+            const panel = document.getElementById('auditorPanel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function addAuditorCriterion() {
+            const name = document.getElementById('criterionName').value;
+            const description = document.getElementById('criterionDescription').value;
+            const priority = document.getElementById('criterionPriority').value;
+
+            if (!name || !description) {
+                showNotification('Please fill in both criterion name and description');
+                return;
+            }
+
+            const criterion = {
+                id: auditorCriteria.length + 1,
+                name: name,
+                description: description,
+                priority: priority,
+                dateAdded: new Date().toISOString().split('T')[0]
+            };
+
+            auditorCriteria.push(criterion);
+            document.getElementById('criterionName').value = '';
+            document.getElementById('criterionDescription').value = '';
+            document.getElementById('criterionPriority').value = 'medium';
+
+            updateCriteriaDisplay();
+            showNotification(`Auditor criterion "${name}" added successfully`);
+        }
+
+        function removeCriterion(id) {
+            auditorCriteria = auditorCriteria.filter(c => c.id !== id);
+            updateCriteriaDisplay();
+            showNotification('Auditor criterion removed');
+        }
+
+        function updateCriteriaDisplay() {
+            const criteriaList = document.getElementById('criteriaList');
+            const noCriteria = document.getElementById('noCriteria');
+
+            if (auditorCriteria.length === 0) {
+                criteriaList.innerHTML = '';
+                noCriteria.style.display = 'block';
+                return;
+            }
+
+            noCriteria.style.display = 'none';
+            criteriaList.innerHTML = auditorCriteria.map(criterion => `
+                <div class="bg-slate-700/50 p-4 rounded-lg border border-slate-600">
+                    <div class="flex justify-between items-start mb-2">
+                        <h5 class="font-semibold text-blue-400">${criterion.name}</h5>
+                        <div class="flex items-center gap-2">
+                            <span class="px-2 py-1 rounded text-xs ${getPriorityClass(criterion.priority)}">
+                                ${criterion.priority}
+                            </span>
+                            <button onclick="removeCriterion(${criterion.id})" class="text-red-400 hover:text-red-300 text-sm">
+                                ✕
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-400">${criterion.description}</p>
+                    <p class="text-xs text-gray-500 mt-2">Added: ${criterion.dateAdded}</p>
+                </div>
+            `).join('');
+        }
+
+        function getPriorityClass(priority) {
+            switch(priority) {
+                case 'critical': return 'bg-red-500/20 text-red-400';
+                case 'high': return 'bg-orange-500/20 text-orange-400';
+                case 'medium': return 'bg-yellow-500/20 text-yellow-400';
+                case 'low': return 'bg-green-500/20 text-green-400';
+                default: return 'bg-gray-500/20 text-gray-400';
+            }
+        }
+
+        // File upload functions
+        function handleFileUpload(event) {
+            const files = Array.from(event.target.files);
+
+            files.forEach(file => {
+                const document = {
+                    id: uploadedDocuments.length + 1,
+                    name: file.name,
+                    type: getFileType(file.name),
+                    size: formatFileSize(file.size),
+                    uploadDate: new Date().toISOString().split('T')[0],
+                    status: 'Uploading...'
+                };
+
+                uploadedDocuments.push(document);
+                updateUploadedFilesDisplay();
+
+                // Simulate upload and analysis
+                setTimeout(() => {
+                    document.status = 'Analyzing...';
+                    updateUploadedFilesDisplay();
+
+                    setTimeout(() => {
+                        document.status = auditorCriteria.length > 0 ? 'Enhanced Analysis Complete' : 'Analyzed';
+                        updateUploadedFilesDisplay();
+                        generateAnalysis(document);
+                        showNotification(`AI analysis completed for ${document.name}`);
+                    }, 3000);
+                }, 1000);
+            });
+
+            document.getElementById('clearButton').style.display = 'block';
+        }
+
+        function getFileType(filename) {
+            const ext = filename.split('.').pop().toLowerCase();
+            switch(ext) {
+                case 'pdf': return 'PDF Document';
+                case 'xlsx': case 'xls': return 'Excel Spreadsheet';
+                case 'csv': return 'CSV File';
+                default: return 'Document';
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function updateUploadedFilesDisplay() {
+            const container = document.getElementById('uploadedFiles');
+
+            if (uploadedDocuments.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-400">
+                        <div class="text-4xl mb-4">📄</div>
+                        <p>No documents uploaded yet</p>
+                        <p class="text-sm">Upload financial documents to get AI analysis</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = uploadedDocuments.map(doc => `
+                <div class="bg-slate-700/50 p-4 rounded-lg border border-slate-600">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h4 class="font-semibold">${doc.name}</h4>
+                            <p class="text-sm text-gray-400">${doc.type} • ${doc.size}</p>
+                        </div>
+                        <span class="text-xs px-2 py-1 rounded ${getStatusClass(doc.status)}">
+                            ${doc.status}
+                        </span>
+                    </div>
+                    ${doc.status === 'Analyzed' || doc.status === 'Enhanced Analysis Complete' ? `
+                        <button onclick="viewAnalysis('${doc.name}')" class="bg-emerald-500 hover:bg-emerald-600 px-3 py-1 rounded text-xs mt-2">
+                            View Analysis
+                        </button>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function getStatusClass(status) {
+            switch(status) {
+                case 'Uploading...': return 'bg-blue-500/20 text-blue-400';
+                case 'Analyzing...': return 'bg-yellow-500/20 text-yellow-400';
+                case 'Analyzed': return 'bg-green-500/20 text-green-400';
+                case 'Enhanced Analysis Complete': return 'bg-purple-500/20 text-purple-400';
+                default: return 'bg-gray-500/20 text-gray-400';
+            }
+        }
+
+        function generateAnalysis(document) {
+            const findings = [
+                { type: 'success', message: 'Revenue recognition follows accounting standards', severity: 'low' },
+                { type: 'warning', message: 'Unusual expense pattern detected', severity: 'medium' },
+                { type: 'error', message: 'Missing documentation for large transactions', severity: 'high' },
+                { type: 'success', message: 'Cash flow management is optimal', severity: 'low' },
+                { type: 'warning', message: 'Budget variance exceeds threshold', severity: 'medium' }
+            ];
+
+            const customFindings = auditorCriteria.map(criterion => ({
+                type: Math.random() > 0.7 ? 'success' : Math.random() > 0.4 ? 'warning' : 'error',
+                message: `${criterion.name}: ${getRandomAnalysisResult()}`,
+                severity: criterion.priority
+            }));
+
+            const analysis = {
+                id: analysisResults.length + 1,
+                documentName: document.name,
+                analysisType: auditorCriteria.length > 0 ? 'Enhanced AI Analysis with Custom Criteria' : 'Standard AI Analysis',
+                score: Math.floor(Math.random() * 20) + 75,
+                findings: [...customFindings, ...findings.slice(0, 3)],
+                recommendations: [
+                    'Implement automated expense tracking system',
+                    'Review quarterly budget allocations',
+                    'Enhance invoice approval workflow',
+                    'Update financial reporting templates'
+                ],
+                customCriteriaUsed: auditorCriteria.length,
+                processingTime: `${Math.floor(Math.random() * 3) + 2}.${Math.floor(Math.random() * 9)}s`
+            };
+
+            analysisResults.unshift(analysis);
+            updateAnalysisResultsDisplay();
+        }
+
+        function getRandomAnalysisResult() {
+            const results = [
+                'Compliant with specified requirements',
+                'Minor deviations detected, review recommended',
+                'Significant issues found, immediate attention required',
+                'Excellent compliance, exceeds expectations',
+                'Partial compliance, additional documentation needed'
+            ];
+            return results[Math.floor(Math.random() * results.length)];
+        }
+
+        function updateAnalysisResultsDisplay() {
+            const container = document.getElementById('analysisResults');
+
+            if (analysisResults.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-400">
+                        <div class="text-4xl mb-4">📊</div>
+                        <p>No analysis results yet</p>
+                        <p class="text-sm">Upload documents to see AI analysis</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = analysisResults.slice(0, 3).map(analysis => `
+                <div class="bg-slate-700/50 p-4 rounded-lg border border-slate-600">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h4 class="font-semibold">${analysis.documentName}</h4>
+                            <p class="text-sm text-gray-400">${analysis.analysisType}</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-2xl font-bold ${getScoreColor(analysis.score)}">${analysis.score}%</div>
+                            <div class="text-xs text-gray-400">Compliance Score</div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="text-sm text-gray-400 mb-1">Key Findings:</div>
+                        ${analysis.findings.slice(0, 2).map(finding => `
+                            <div class="text-xs ${getFindingColor(finding.type)} mb-1">
+                                ${finding.type === 'success' ? '✅' : finding.type === 'warning' ? '⚠️' : '❌'} ${finding.message}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button onclick="viewDetailedAnalysis(${analysis.id})" class="bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded text-xs">
+                        View Full Analysis
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function getScoreColor(score) {
+            if (score >= 90) return 'text-green-400';
+            if (score >= 80) return 'text-yellow-400';
+            return 'text-red-400';
+        }
+
+        function getFindingColor(type) {
+            switch(type) {
+                case 'success': return 'text-green-400';
+                case 'warning': return 'text-yellow-400';
+                case 'error': return 'text-red-400';
+                default: return 'text-gray-400';
+            }
+        }
+
+        function viewAnalysis(documentName) {
+            const analysis = analysisResults.find(a => a.documentName === documentName);
+            if (analysis) {
+                viewDetailedAnalysis(analysis.id);
+            }
+        }
+
+        function viewDetailedAnalysis(analysisId) {
+            const analysis = analysisResults.find(a => a.id === analysisId);
+            if (analysis) {
+                showNotification(`Detailed Analysis for ${analysis.documentName}:\n\nCompliance Score: ${analysis.score}%\nAnalysis Type: ${analysis.analysisType}\nProcessing Time: ${analysis.processingTime}\n\nThis would open a detailed analysis view in the full application.`);
+            }
+        }
+
+        function clearAllFiles() {
+            uploadedDocuments = [];
+            analysisResults = [];
+            updateUploadedFilesDisplay();
+            updateAnalysisResultsDisplay();
+            document.getElementById('clearButton').style.display = 'none';
+            document.getElementById('fileUpload').value = '';
+            showNotification('All files and analysis results cleared');
+        }
+
+        // Business Trip functions
+        let tripReports = [];
+        let currentExpenses = [];
+
+        function toggleTripForm() {
+            const form = document.getElementById('tripForm');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+            if (form.style.display === 'block') {
+                clearTripForm();
+            }
+        }
+
+        function clearTripForm() {
+            document.getElementById('tripDestination').value = '';
+            document.getElementById('tripPurpose').value = '';
+            document.getElementById('tripStartDate').value = '';
+            document.getElementById('tripEndDate').value = '';
+            currentExpenses = [];
+            updateExpensesList();
+        }
+
+        function addExpense() {
+            const description = document.getElementById('expenseDescription').value;
+            const amount = parseFloat(document.getElementById('expenseAmount').value);
+
+            if (!description || !amount) {
+                showNotification('Please fill in both expense description and amount');
+                return;
+            }
+
+            const expense = {
+                id: currentExpenses.length + 1,
+                description: description,
+                amount: amount
+            };
+
+            currentExpenses.push(expense);
+            document.getElementById('expenseDescription').value = '';
+            document.getElementById('expenseAmount').value = '';
+            updateExpensesList();
+        }
+
+        function removeExpense(id) {
+            currentExpenses = currentExpenses.filter(e => e.id !== id);
+            updateExpensesList();
+        }
+
+        function updateExpensesList() {
+            const container = document.getElementById('expensesList');
+
+            if (currentExpenses.length === 0) {
+                container.innerHTML = '<p class="text-gray-400 text-sm">No expenses added yet</p>';
+                return;
+            }
+
+            const total = currentExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+
+            container.innerHTML = `
+                ${currentExpenses.map(expense => `
+                    <div class="flex justify-between items-center bg-slate-700/50 p-2 rounded">
+                        <span>${expense.description}</span>
+                        <div class="flex items-center gap-2">
+                            <span class="font-semibold">$${expense.amount.toFixed(2)}</span>
+                            <button onclick="removeExpense(${expense.id})" class="text-red-400 hover:text-red-300 text-sm">✕</button>
+                        </div>
+                    </div>
+                `).join('')}
+                <div class="flex justify-between items-center bg-emerald-500/20 p-2 rounded font-semibold">
+                    <span>Total:</span>
+                    <span>$${total.toFixed(2)}</span>
+                </div>
+            `;
+        }
+
+        function submitTripReport() {
+            const destination = document.getElementById('tripDestination').value;
+            const purpose = document.getElementById('tripPurpose').value;
+            const startDate = document.getElementById('tripStartDate').value;
+            const endDate = document.getElementById('tripEndDate').value;
+
+            if (!destination || !purpose || !startDate || !endDate) {
+                showNotification('Please fill in all required fields');
+                return;
+            }
+
+            const totalExpenses = currentExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+
+            const report = {
+                id: tripReports.length + 1,
+                destination: destination,
+                purpose: purpose,
+                startDate: startDate,
+                endDate: endDate,
+                expenses: [...currentExpenses],
+                totalExpenses: totalExpenses,
+                status: 'Pending Review',
+                submittedDate: new Date().toISOString().split('T')[0]
+            };
+
+            tripReports.unshift(report);
+            updateTripReportsDisplay();
+            toggleTripForm();
+            document.getElementById('clearReportsButton').style.display = 'block';
+            showNotification(`Trip report for ${destination} submitted successfully`);
+        }
+
+        function updateTripReportsDisplay() {
+            const container = document.getElementById('tripReportsList');
+
+            if (tripReports.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-400">
+                        <div class="text-4xl mb-4">✈️</div>
+                        <p>No trip reports submitted yet</p>
+                        <p class="text-sm">Create a new trip report to get started</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = tripReports.map(report => `
+                <div class="bg-slate-700/50 p-4 rounded-lg border border-slate-600">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h4 class="font-semibold text-lg">${report.destination}</h4>
+                            <p class="text-gray-400">${report.purpose}</p>
+                            <p class="text-sm text-gray-500">${report.startDate} to ${report.endDate}</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xl font-bold text-emerald-400">$${report.totalExpenses.toFixed(2)}</div>
+                            <span class="text-xs px-2 py-1 rounded ${getReportStatusClass(report.status)}">
+                                ${report.status}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="viewTripDetails(${report.id})" class="bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded text-xs">
+                            View Details
+                        </button>
+                        <button onclick="eSignReport(${report.id})" class="bg-purple-500 hover:bg-purple-600 px-3 py-1 rounded text-xs">
+                            E-Sign Report
+                        </button>
+                        <button onclick="approveReport(${report.id})" class="bg-green-500 hover:bg-green-600 px-3 py-1 rounded text-xs">
+                            Approve
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getReportStatusClass(status) {
+            switch(status) {
+                case 'Pending Review': return 'bg-yellow-500/20 text-yellow-400';
+                case 'Approved': return 'bg-green-500/20 text-green-400';
+                case 'E-Signed': return 'bg-purple-500/20 text-purple-400';
+                default: return 'bg-gray-500/20 text-gray-400';
+            }
+        }
+
+        function viewTripDetails(reportId) {
+            const report = tripReports.find(r => r.id === reportId);
+            if (report) {
+                const expensesList = report.expenses.map(e => `• ${e.description}: $${e.amount.toFixed(2)}`).join('\n');
+                showNotification(`Trip Report Details:\n\nDestination: ${report.destination}\nPurpose: ${report.purpose}\nDates: ${report.startDate} to ${report.endDate}\nStatus: ${report.status}\n\nExpenses:\n${expensesList}\n\nTotal: $${report.totalExpenses.toFixed(2)}`);
+            }
+        }
+
+        function eSignReport(reportId) {
+            const report = tripReports.find(r => r.id === reportId);
+            if (report) {
+                report.status = 'E-Signed';
+                updateTripReportsDisplay();
+                showNotification(`Trip report for ${report.destination} has been e-signed`);
+            }
+        }
+
+        function approveReport(reportId) {
+            const report = tripReports.find(r => r.id === reportId);
+            if (report) {
+                report.status = 'Approved';
+                updateTripReportsDisplay();
+                showNotification(`Trip report for ${report.destination} has been approved`);
+            }
+        }
+
+        function downloadOfficialForm() {
+            const formContent = `IT PARK BUSINESS TRIP REPORT FORM
+
+Company: ________________________
+Employee Name: ________________________
+Position: ________________________
+Department: ________________________
+
+TRIP DETAILS:
+Destination: ________________________
+Purpose: ________________________
+Start Date: ________________________
+End Date: ________________________
+
+EXPENSES:
+Transportation: ________________________
+Accommodation: ________________________
+Meals: ________________________
+Other: ________________________
+
+Total Expenses: ________________________
+
+APPROVALS:
+Manager Signature: ________________________
+Date: ________________________
+
+HR Signature: ________________________
+Date: ________________________
+
+Finance Signature: ________________________
+Date: ________________________
+
+This form complies with IT Park regulations for business trip reporting.
+`;
+
+            const blob = new Blob([formContent], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'IT_Park_Business_Trip_Form.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+
+            showNotification('Official IT Park business trip form downloaded successfully');
+        }
+
+        function clearAllReports() {
+            tripReports = [];
+            updateTripReportsDisplay();
+            document.getElementById('clearReportsButton').style.display = 'none';
+            showNotification('All trip reports cleared');
+        }
+
+        // Pricing plan functions
+        let selectedPlan = null;
+
+        function selectPlan(planName, price) {
+            selectedPlan = { name: planName, price: price };
+
+            // Reset all plan styles
+            document.getElementById('plan-small').className = 'bg-slate-800/30 p-8 rounded-xl border border-slate-700 text-center transition-all duration-300 hover:border-blue-500 cursor-pointer';
+            document.getElementById('plan-medium').className = 'bg-emerald-500/10 p-8 rounded-xl border border-emerald-500 text-center relative transition-all duration-300 hover:bg-emerald-500/20 cursor-pointer';
+            document.getElementById('plan-large').className = 'bg-slate-800/30 p-8 rounded-xl border border-slate-700 text-center transition-all duration-300 hover:border-purple-500 cursor-pointer';
+
+            // Highlight selected plan
+            if (planName === 'Small Business') {
+                document.getElementById('plan-small').className = 'bg-blue-500/20 p-8 rounded-xl border border-blue-500 text-center transition-all duration-300 transform scale-105 cursor-pointer';
+                document.querySelector('#plan-small button').innerHTML = '✓ Selected';
+                document.querySelector('#plan-small button').className = 'w-full py-3 px-6 rounded-lg font-semibold transition-colors bg-blue-500 text-white';
+            } else if (planName === 'Medium Business') {
+                document.getElementById('plan-medium').className = 'bg-emerald-500/30 p-8 rounded-xl border border-emerald-400 text-center relative transition-all duration-300 transform scale-105 cursor-pointer';
+                document.querySelector('#plan-medium button').innerHTML = '✓ Selected';
+                document.querySelector('#plan-medium button').className = 'w-full py-3 px-6 rounded-lg font-semibold transition-colors bg-emerald-500 text-white';
+            } else if (planName === 'Large Business') {
+                document.getElementById('plan-large').className = 'bg-purple-500/20 p-8 rounded-xl border border-purple-500 text-center transition-all duration-300 transform scale-105 cursor-pointer';
+                document.querySelector('#plan-large button').innerHTML = '✓ Selected';
+                document.querySelector('#plan-large button').className = 'w-full py-3 px-6 rounded-lg font-semibold transition-colors bg-purple-500 text-white';
+            }
+
+            showNotification(`${planName} plan selected! Price: $${price}/month. Contact us to get started.`);
         }
     </script>
 </body>
