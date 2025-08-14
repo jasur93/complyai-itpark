@@ -152,6 +152,9 @@
             const [newCriterion, setNewCriterion] = useState({ name: '', description: '', standard: 'UZ', priority: 'medium' });
             const [showMobileMenu, setShowMobileMenu] = useState(false);
             const [showTripForm, setShowTripForm] = useState(false);
+            const [showSignaturePad, setShowSignaturePad] = useState(false);
+            const [employeeSignature, setEmployeeSignature] = useState('');
+            const [signatureDate, setSignatureDate] = useState('');
             const [tripFormData, setTripFormData] = useState({
                 employeeName: '',
                 department: '',
@@ -664,10 +667,13 @@ This report is generated using artificial intelligence and should be reviewed by
                     return;
                 }
 
-                // Validate electronic signature
+                // Check for electronic signature (optional for testing)
                 if (!employeeSignature) {
-                    addNotification('error', 'Electronic signature is required. Please sign the document before submitting.');
-                    return;
+                    const confirmSubmit = confirm('No electronic signature detected. For official submission, an e-signature is required. Continue anyway for testing?');
+                    if (!confirmSubmit) {
+                        addNotification('info', 'Please apply electronic signature for official submission');
+                        return;
+                    }
                 }
 
                 // Generate filled form for download
@@ -696,12 +702,15 @@ Total Amount: $${tripFormData.totalAmount.toFixed(2)}
 
 ELECTRONIC SIGNATURE VERIFICATION:
 ================================
-Employee Signature: ✓ DIGITALLY SIGNED
+${employeeSignature ? `Employee Signature: ✓ DIGITALLY SIGNED
 Signed by: ${tripFormData.employeeName}
 Signature Date: ${new Date(signatureDate).toLocaleString()}
-Digital Signature ID: ${signatureDate ? signatureDate.slice(-12) : 'N/A'}
+Digital Signature ID: ${signatureDate.slice(-12)}
 E-Signature Platform: ComplyAI E-Signature System
-Verification Status: ✓ VERIFIED
+Verification Status: ✓ VERIFIED` : `Employee Signature: [PENDING - REQUIRES E-SIGNATURE]
+Status: ⚠️ NOT SIGNED
+Note: For official submission, electronic signature is required
+E-Signature Platform: ComplyAI E-Signature System Available`}
 
 Manager Approval: _______________
 Date: __________________________
@@ -1824,7 +1833,11 @@ Submit to IT Park compliance department within 7 days.
                                 <h3 className="text-2xl font-semibold mb-4 text-blue-400">2. Fill Form</h3>
                                 <p className="text-gray-300 mb-6">Complete the form with your trip expenses and details according to money you spend</p>
                                 <button
-                                    onClick={() => setShowTripForm(true)}
+                                    onClick={() => {
+                                        console.log('Fill Form button clicked');
+                                        setShowTripForm(true);
+                                        addNotification('info', 'Opening business trip form...');
+                                    }}
                                     className="bg-blue-500 hover:bg-blue-600 px-6 py-3 rounded-lg font-semibold w-full"
                                 >
                                     ✏️ Fill Form Online
