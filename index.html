@@ -459,6 +459,38 @@
                 addNotification('success', `Trip report for ${trip.destination} has been e-signed and submitted!`);
             };
 
+            const downloadOfficialForm = () => {
+                // Simulate downloading official IT Park form
+                addNotification('success', 'Official IT Park business trip form downloaded successfully');
+                // In real implementation, this would download an actual PDF form
+            };
+
+            const clearTripReports = () => {
+                setBusinessTrips([]);
+                setShowTripForm(false);
+                setTripForm({ destination: '', purpose: '', startDate: '', endDate: '', totalAmount: '', expenses: [] });
+                addNotification('info', 'All trip reports cleared');
+            };
+
+            const viewTripDetails = (trip) => {
+                // For demo, show trip details in notification
+                addNotification('info', `Viewing details for ${trip.destination} trip - ${trip.purpose}`);
+            };
+
+            const approveTripReport = (tripId) => {
+                setBusinessTrips(prev => prev.map(t =>
+                    t.id === tripId ? {...t, status: 'Approved'} : t
+                ));
+                const trip = businessTrips.find(t => t.id === tripId);
+                addNotification('success', `Trip report for ${trip.destination} has been approved!`);
+            };
+
+            const watchDemo = () => {
+                // Navigate to dashboard to show demo
+                setCurrentView('dashboard');
+                addNotification('info', 'Welcome to ComplyAI Demo! Explore all features.');
+            };
+
             if (currentView === 'landing') {
                 return (
                     <div className="min-h-screen gradient-bg text-white">
@@ -553,10 +585,16 @@
                                 {t.subtitle}
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                <button className="bg-emerald-500 hover:bg-emerald-600 px-8 py-4 rounded-lg text-lg font-semibold transition-colors glow-effect">
+                                <button
+                                    onClick={() => setCurrentView('dashboard')}
+                                    className="bg-emerald-500 hover:bg-emerald-600 px-8 py-4 rounded-lg text-lg font-semibold transition-colors glow-effect"
+                                >
                                     Start Free Trial
                                 </button>
-                                <button className="border border-emerald-500 hover:bg-emerald-500 px-8 py-4 rounded-lg text-lg font-semibold transition-colors">
+                                <button
+                                    onClick={watchDemo}
+                                    className="border border-emerald-500 hover:bg-emerald-500 px-8 py-4 rounded-lg text-lg font-semibold transition-colors"
+                                >
                                     Watch Demo
                                 </button>
                             </div>
@@ -1000,13 +1038,19 @@
 
                             <div className="flex justify-center gap-4 mb-8">
                                 <button
-                                    onClick={() => {
-                                        addNotification('info', 'Official IT Park business trip form downloaded');
-                                    }}
+                                    onClick={downloadOfficialForm}
                                     className="bg-emerald-500 hover:bg-emerald-600 px-6 py-3 rounded-lg font-semibold flex items-center gap-2"
                                 >
                                     📄 Download Official Form
                                 </button>
+                                {businessTrips.length > 0 && (
+                                    <button
+                                        onClick={clearTripReports}
+                                        className="bg-red-500 hover:bg-red-600 px-6 py-3 rounded-lg font-semibold flex items-center gap-2"
+                                    >
+                                        🗑️ Clear All Reports
+                                    </button>
+                                )}
 
                                 <input
                                     type="file"
@@ -1072,9 +1116,7 @@
                                         <h4 className="text-xl font-semibold mb-3">Download Official Form</h4>
                                         <p className="text-gray-400 mb-6">Get the standard IT Park business trip report template</p>
                                         <button
-                                            onClick={() => {
-                                                addNotification('success', 'Official IT Park business trip form downloaded successfully');
-                                            }}
+                                            onClick={downloadOfficialForm}
                                             className="bg-emerald-500 hover:bg-emerald-600 px-6 py-3 rounded-lg font-semibold"
                                         >
                                             📄 Download Form
@@ -1120,6 +1162,60 @@
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Submitted Trip Reports */}
+                            {businessTrips.length > 0 && (
+                                <div className="mt-12">
+                                    <h3 className="text-2xl font-semibold mb-6 text-center">📋 Submitted Trip Reports</h3>
+                                    <div className="space-y-4">
+                                        {businessTrips.slice(0, 5).map(trip => (
+                                            <div key={trip.id} className="bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                                                <div className="flex justify-between items-start mb-4">
+                                                    <div>
+                                                        <h4 className="font-semibold text-lg">{trip.destination || trip.fileName}</h4>
+                                                        <p className="text-gray-400">{trip.purpose || 'Business Trip Report'}</p>
+                                                        <p className="text-sm text-gray-500">
+                                                            {trip.date || trip.uploadDate} • ${trip.amount || 'Amount TBD'}
+                                                        </p>
+                                                    </div>
+                                                    <div className={`px-3 py-1 rounded text-sm ${
+                                                        trip.status === 'Completed' || trip.status === 'E-Signed & Submitted' ? 'bg-green-500/20 text-green-400' :
+                                                        trip.status === 'Approved' ? 'bg-blue-500/20 text-blue-400' :
+                                                        trip.status === 'Pending Report' || trip.status === 'Pending E-Signature' ? 'bg-yellow-500/20 text-yellow-400' :
+                                                        'bg-gray-500/20 text-gray-400'
+                                                    }`}>
+                                                        {trip.status}
+                                                    </div>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={() => viewTripDetails(trip)}
+                                                        className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded text-sm"
+                                                    >
+                                                        View Details
+                                                    </button>
+                                                    {trip.status === 'Pending E-Signature' && (
+                                                        <button
+                                                            onClick={() => signTripReport(trip.id)}
+                                                            className="bg-emerald-500 hover:bg-emerald-600 px-4 py-2 rounded text-sm"
+                                                        >
+                                                            E-Sign Report
+                                                        </button>
+                                                    )}
+                                                    {trip.status === 'Pending Report' && (
+                                                        <button
+                                                            onClick={() => approveTripReport(trip.id)}
+                                                            className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded text-sm"
+                                                        >
+                                                            Approve
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
