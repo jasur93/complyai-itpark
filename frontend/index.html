@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ComplyAI - AI-Powered Compliance System</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 70%, #064e3b 100%);
+        }
+
+        .glow-effect {
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .animate-pulse-slow {
+            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Functional Comply AI Dashboard
+        const ComplyAI = () => {
+            const [currentView, setCurrentView] = useState('landing');
+            const [isVisible, setIsVisible] = useState(false);
+            const [reports, setReports] = useState([]);
+            const [businessTrips, setBusinessTrips] = useState([]);
+            const [complianceScore, setComplianceScore] = useState(85);
+            const [notifications, setNotifications] = useState([]);
+            const [chatMessages, setChatMessages] = useState([]);
+            const [chatInput, setChatInput] = useState('');
+            const [uploadedDocuments, setUploadedDocuments] = useState([]);
+            const [analysisResults, setAnalysisResults] = useState([]);
+            const [isAnalyzing, setIsAnalyzing] = useState(false);
+            const [showTripForm, setShowTripForm] = useState(false);
+            const [tripForm, setTripForm] = useState({
+                destination: '',
+                purpose: '',
+                startDate: '',
+                endDate: '',
+                totalAmount: '',
+                expenses: []
+            });
+            const [currentLanguage, setCurrentLanguage] = useState('eng');
+
+            // Translations
+            const translations = {
+                eng: {
+                    title: "AI-Powered Compliance System",
+                    subtitle: "Automated reporting, auditing, and early violation alerts—designed for IT Park resident companies",
+                    financialAnalysis: "AI Financial Analysis",
+                    financialAnalysisDesc: "Upload business/financial reports and get detailed AI-powered accounting analysis and auditing",
+                    businessTrips: "Business Trip Reports",
+                    businessTripsDesc: "Employees submit trip expenses with electronic signature (E-Imzo) integration",
+                    choosePlan: "Choose Your Plan",
+                    choosePlanDesc: "Select the perfect plan for your business size",
+                    smallBusiness: "Small Business",
+                    mediumBusiness: "Medium Business",
+                    largeBusiness: "Large Business",
+                    startNow: "Start Now",
+                    tryDashboard: "Try Dashboard Now",
+                    dashboard: "Dashboard",
+                    features: "Features",
+                    contact: "Contact"
+                },
+                uz: {
+                    title: "AI Asosidagi Muvofiqlik Tizimi",
+                    subtitle: "Avtomatlashtirilgan hisobot, audit va erta buzilish ogohlantirishlari—IT Park rezident kompaniyalari uchun mo'ljallangan",
+                    financialAnalysis: "AI Moliyaviy Tahlil",
+                    financialAnalysisDesc: "Biznes/moliyaviy hisobotlarni yuklang va batafsil AI asosidagi buxgalteriya tahlili va auditini oling",
+                    businessTrips: "Biznes Safari Hisobotlari",
+                    businessTripsDesc: "Xodimlar elektron imzo (E-Imzo) integratsiyasi bilan safari xarajatlarini topshiradilar",
+                    choosePlan: "Rejangizni Tanlang",
+                    choosePlanDesc: "Biznesingiz hajmiga mos keladigan mukammal rejani tanlang",
+                    smallBusiness: "Kichik Biznes",
+                    mediumBusiness: "O'rta Biznes",
+                    largeBusiness: "Yirik Biznes",
+                    startNow: "Boshlash",
+                    tryDashboard: "Boshqaruv Panelini Sinab Ko'ring",
+                    dashboard: "Boshqaruv Paneli",
+                    features: "Xususiyatlar",
+                    contact: "Aloqa"
+                },
+                ru: {
+                    title: "Система Соответствия на Основе ИИ",
+                    subtitle: "Автоматизированная отчетность, аудит и раннее предупреждение о нарушениях—разработано для резидентных компаний IT-парка",
+                    financialAnalysis: "ИИ Финансовый Анализ",
+                    financialAnalysisDesc: "Загружайте бизнес/финансовые отчеты и получайте детальный бухгалтерский анализ и аудит на основе ИИ",
+                    businessTrips: "Отчеты о Командировках",
+                    businessTripsDesc: "Сотрудники подают расходы на командировки с интеграцией электронной подписи (E-Imzo)",
+                    choosePlan: "Выберите Ваш План",
+                    choosePlanDesc: "Выберите идеальный план для размера вашего бизнеса",
+                    smallBusiness: "Малый Бизнес",
+                    mediumBusiness: "Средний Бизнес",
+                    largeBusiness: "Крупный Бизнес",
+                    startNow: "Начать",
+                    tryDashboard: "Попробовать Панель",
+                    dashboard: "Панель Управления",
+                    features: "Функции",
+                    contact: "Контакты"
+                }
+            };
+
+            const t = translations[currentLanguage];
+
+            useEffect(() => {
+                setIsVisible(true);
+                // Initialize with sample data
+                initializeSampleData();
+            }, []);
+
+            const initializeSampleData = () => {
+                setReports([
+                    { id: 1, name: 'Q4 2024 Financial Report', status: 'Generated', date: '2024-12-15', type: 'quarterly' },
+                    { id: 2, name: 'Annual Tax Report 2024', status: 'Pending Signature', date: '2024-12-10', type: 'annual' },
+                    { id: 3, name: 'Monthly Revenue Report', status: 'Draft', date: '2024-12-01', type: 'monthly' }
+                ]);
+
+                setBusinessTrips([
+                    { id: 1, destination: 'Dubai', purpose: 'Tech Conference', status: 'Completed', amount: 2500, date: '2024-11-15' },
+                    { id: 2, destination: 'Istanbul', purpose: 'Client Meeting', status: 'Pending Report', amount: 1200, date: '2024-12-01' },
+                    { id: 3, destination: 'Moscow', purpose: 'Training', status: 'Approved', amount: 1800, date: '2024-12-20' }
+                ]);
+
+                setNotifications([
+                    { id: 1, type: 'deadline', message: 'Q4 Report due in 5 days', priority: 'high', time: '2 hours ago' },
+                    { id: 2, type: 'violation', message: 'Missing receipts for Dubai trip', priority: 'medium', time: '1 day ago' },
+                    { id: 3, type: 'success', message: 'Monthly report auto-generated', priority: 'low', time: '3 days ago' }
+                ]);
+
+                setChatMessages([
+                    { type: 'bot', message: 'Hello! I\'m your AI compliance assistant. How can I help you today?' }
+                ]);
+
+                setUploadedDocuments([
+                    { id: 1, name: 'Financial_Statement_Q4.xlsx', type: 'Financial Statement', uploadDate: '2024-12-10', status: 'Analyzed', size: '2.4 MB' },
+                    { id: 2, name: 'Invoice_Records_Nov.pdf', type: 'Invoice Records', uploadDate: '2024-12-08', status: 'Processing', size: '1.8 MB' },
+                    { id: 3, name: 'Bank_Statement_Dec.pdf', type: 'Bank Statement', uploadDate: '2024-12-05', status: 'Analyzed', size: '956 KB' }
+                ]);
+
+                setAnalysisResults([
+                    {
+                        id: 1,
+                        documentName: 'Financial_Statement_Q4.xlsx',
+                        analysisType: 'Financial Audit',
+                        score: 92,
+                        findings: [
+                            { type: 'success', message: 'Revenue recognition follows IFRS standards', severity: 'low' },
+                            { type: 'warning', message: 'Accounts receivable aging shows 15% over 90 days', severity: 'medium' },
+                            { type: 'success', message: 'Cash flow projections are realistic', severity: 'low' },
+                            { type: 'error', message: 'Missing depreciation schedule for new equipment', severity: 'high' }
+                        ],
+                        recommendations: [
+                            'Implement stricter credit collection policies',
+                            'Update fixed asset register with depreciation schedules',
+                            'Consider factoring for aged receivables'
+                        ],
+                        complianceIssues: [
+                            'IT Park quarterly reporting requirements: Compliant',
+                            'Tax documentation: 2 missing receipts identified',
+                            'E-signature requirements: All documents properly signed'
+                        ]
+                    },
+                    {
+                        id: 2,
+                        documentName: 'Bank_Statement_Dec.pdf',
+                        analysisType: 'Transaction Analysis',
+                        score: 88,
+                        findings: [
+                            { type: 'success', message: 'All transactions properly categorized', severity: 'low' },
+                            { type: 'warning', message: 'Unusual large cash withdrawal on Dec 15', severity: 'medium' },
+                            { type: 'success', message: 'Bank reconciliation matches accounting records', severity: 'low' }
+                        ],
+                        recommendations: [
+                            'Document purpose of large cash transactions',
+                            'Implement approval workflow for cash withdrawals over $1000'
+                        ],
+                        complianceIssues: [
+                            'Anti-money laundering: Compliant',
+                            'Transaction reporting: All transactions properly documented'
+                        ]
+                    }
+                ]);
+            };
+
+            const features = [
+                {
+                    icon: "📊",
+                    title: t.financialAnalysis,
+                    description: t.financialAnalysisDesc,
+                    action: () => setCurrentView('analysis')
+                },
+                {
+                    icon: "✈️",
+                    title: t.businessTrips,
+                    description: t.businessTripsDesc,
+                    action: () => setCurrentView('trips')
+                }
+            ];
+
+            // Working Functions
+            const generateReport = (type) => {
+                const newReport = {
+                    id: reports.length + 1,
+                    name: `${type} Report - ${new Date().toLocaleDateString()}`,
+                    status: 'Generating...',
+                    date: new Date().toISOString().split('T')[0],
+                    type: type.toLowerCase()
+                };
+                setReports([newReport, ...reports]);
+
+                // Simulate AI generation
+                setTimeout(() => {
+                    setReports(prev => prev.map(r =>
+                        r.id === newReport.id
+                            ? { ...r, status: 'Generated', aiAnalysis: 'Compliance score: 92%. No violations detected.' }
+                            : r
+                    ));
+                    addNotification('success', `${type} report generated successfully!`);
+                }, 3000);
+            };
+
+            const addBusinessTrip = () => {
+                const destinations = ['London', 'Berlin', 'Tokyo', 'Singapore', 'New York'];
+                const purposes = ['Conference', 'Client Meeting', 'Training', 'Partnership', 'Research'];
+
+                const newTrip = {
+                    id: businessTrips.length + 1,
+                    destination: destinations[Math.floor(Math.random() * destinations.length)],
+                    purpose: purposes[Math.floor(Math.random() * purposes.length)],
+                    status: 'Pending Approval',
+                    amount: Math.floor(Math.random() * 3000) + 500,
+                    date: new Date(Date.now() + Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+                };
+
+                setBusinessTrips([newTrip, ...businessTrips]);
+                addNotification('info', 'New business trip request submitted');
+            };
+
+            const addNotification = (type, message) => {
+                const newNotification = {
+                    id: notifications.length + 1,
+                    type,
+                    message,
+                    priority: type === 'violation' ? 'high' : type === 'deadline' ? 'medium' : 'low',
+                    time: 'Just now'
+                };
+                setNotifications([newNotification, ...notifications]);
+            };
+
+            const sendChatMessage = () => {
+                if (!chatInput.trim()) return;
+
+                const userMessage = { type: 'user', message: chatInput };
+                setChatMessages(prev => [...prev, userMessage]);
+
+                // AI Response simulation
+                setTimeout(() => {
+                    const responses = [
+                        "Based on IT Park regulations, quarterly reports are due 30 days after quarter end.",
+                        "For business trips over $1000, you need manager approval and proper documentation.",
+                        "Your current compliance score is 85%. I recommend addressing the missing receipts to improve it.",
+                        "E-signatures are required for all financial reports. I can help you set up E-Imzo integration.",
+                        "Telegram notifications are active. You'll receive alerts 7, 3, and 1 days before deadlines."
+                    ];
+                    const botMessage = {
+                        type: 'bot',
+                        message: responses[Math.floor(Math.random() * responses.length)]
+                    };
+                    setChatMessages(prev => [...prev, botMessage]);
+                }, 1000);
+
+                setChatInput('');
+            };
+
+            const getStatusColor = (status) => {
+                switch(status.toLowerCase()) {
+                    case 'generated': case 'completed': return 'text-green-400';
+                    case 'pending': case 'pending approval': case 'pending signature': return 'text-yellow-400';
+                    case 'draft': case 'generating...': return 'text-blue-400';
+                    default: return 'text-gray-400';
+                }
+            };
+
+            const getPriorityColor = (priority) => {
+                switch(priority) {
+                    case 'high': return 'border-red-500 bg-red-500/10';
+                    case 'medium': return 'border-yellow-500 bg-yellow-500/10';
+                    case 'low': return 'border-green-500 bg-green-500/10';
+                    default: return 'border-gray-500 bg-gray-500/10';
+                }
+            };
+
+            const handleFileUpload = (event) => {
+                const files = Array.from(event.target.files);
+                const newDocuments = files.map((file, index) => ({
+                    id: uploadedDocuments.length + index + 1,
+                    name: file.name,
+                    type: getDocumentType(file.name),
+                    uploadDate: new Date().toISOString().split('T')[0],
+                    status: 'Uploading...',
+                    size: formatFileSize(file.size),
+                    file: file
+                }));
+
+                setUploadedDocuments([...newDocuments, ...uploadedDocuments]);
+
+                // Simulate upload and analysis
+                newDocuments.forEach((doc, index) => {
+                    setTimeout(() => {
+                        setUploadedDocuments(prev => prev.map(d =>
+                            d.id === doc.id ? { ...d, status: 'Analyzing...' } : d
+                        ));
+
+                        setTimeout(() => {
+                            setUploadedDocuments(prev => prev.map(d =>
+                                d.id === doc.id ? { ...d, status: 'Analyzed' } : d
+                            ));
+
+                            // Generate AI analysis
+                            generateAIAnalysis(doc);
+                            addNotification('success', `AI analysis completed for ${doc.name}`);
+                        }, 3000);
+                    }, 1000 + index * 500);
+                });
+            };
+
+            const getDocumentType = (filename) => {
+                const extension = filename.split('.').pop().toLowerCase();
+                if (['xlsx', 'xls', 'csv'].includes(extension)) return 'Financial Statement';
+                if (['pdf'].includes(extension)) return 'Invoice Records';
+                if (filename.toLowerCase().includes('bank')) return 'Bank Statement';
+                if (filename.toLowerCase().includes('receipt')) return 'Receipt';
+                return 'Business Document';
+            };
+
+            const formatFileSize = (bytes) => {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            };
+
+            const generateAIAnalysis = (document) => {
+                const analysisTypes = ['Financial Audit', 'Transaction Analysis', 'Compliance Check', 'Risk Assessment'];
+                const findings = [
+                    { type: 'success', message: 'All transactions properly documented', severity: 'low' },
+                    { type: 'warning', message: 'Some receipts missing digital signatures', severity: 'medium' },
+                    { type: 'error', message: 'Potential duplicate transactions detected', severity: 'high' },
+                    { type: 'success', message: 'Revenue recognition follows accounting standards', severity: 'low' },
+                    { type: 'warning', message: 'Unusual expense pattern in travel category', severity: 'medium' }
+                ];
+
+                const newAnalysis = {
+                    id: analysisResults.length + 1,
+                    documentName: document.name,
+                    analysisType: analysisTypes[Math.floor(Math.random() * analysisTypes.length)],
+                    score: Math.floor(Math.random() * 20) + 80, // 80-100
+                    findings: findings.slice(0, Math.floor(Math.random() * 3) + 2),
+                    recommendations: [
+                        'Implement digital receipt management system',
+                        'Set up automated transaction categorization',
+                        'Regular reconciliation of accounts'
+                    ],
+                    complianceIssues: [
+                        'IT Park reporting requirements: Compliant',
+                        'Tax documentation: Minor issues identified',
+                        'E-signature compliance: Needs attention'
+                    ]
+                };
+
+                setAnalysisResults([newAnalysis, ...analysisResults]);
+            };
+
+            const addExpense = () => {
+                setTripForm(prev => ({
+                    ...prev,
+                    expenses: [...prev.expenses, { description: '', amount: '', receipt: null }]
+                }));
+            };
+
+            const submitTripReport = () => {
+                if (!tripForm.destination || !tripForm.purpose || !tripForm.startDate || !tripForm.totalAmount) {
+                    alert('Please fill in all required fields');
+                    return;
+                }
+
+                const newTrip = {
+                    id: businessTrips.length + 1,
+                    destination: tripForm.destination,
+                    purpose: tripForm.purpose,
+                    status: 'Pending E-Signature',
+                    amount: parseInt(tripForm.totalAmount),
+                    date: tripForm.startDate,
+                    expenses: tripForm.expenses,
+                    submittedDate: new Date().toISOString().split('T')[0]
+                };
+
+                setBusinessTrips([newTrip, ...businessTrips]);
+                setShowTripForm(false);
+                setTripForm({ destination: '', purpose: '', startDate: '', endDate: '', totalAmount: '', expenses: [] });
+                addNotification('success', 'Trip report submitted successfully! Awaiting e-signature.');
+            };
+
+            const signTripReport = (tripId) => {
+                setBusinessTrips(prev => prev.map(t =>
+                    t.id === tripId ? {...t, status: 'E-Signed & Submitted'} : t
+                ));
+                const trip = businessTrips.find(t => t.id === tripId);
+                addNotification('success', `Trip report for ${trip.destination} has been e-signed and submitted!`);
+            };
+
+            if (currentView === 'landing') {
+                return (
+                    <div className="min-h-screen gradient-bg text-white">
+                        {/* Header */}
+                        <header className="container mx-auto px-6 py-8">
+                            <nav className="flex justify-between items-center">
+                                <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentView('landing')}>
+                                    <svg width="60" height="60" viewBox="0 0 400 400" className="flex-shrink-0">
+                                        <defs>
+                                            <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                <stop offset="0%" stopColor="#10b981" />
+                                                <stop offset="100%" stopColor="#059669" />
+                                            </linearGradient>
+                                        </defs>
+                                        {/* Main checkmark shape */}
+                                        <path d="M150 80 C180 60, 220 70, 250 90 C280 110, 320 140, 340 180 C350 200, 345 220, 330 240 C315 260, 290 270, 270 275 L250 280 C230 285, 210 280, 195 270 L180 260 C160 245, 145 225, 140 200 C135 175, 140 150, 150 130 Z" fill="url(#logoGradient)" />
+
+                                        {/* White checkmark */}
+                                        <path d="M170 200 L200 230 L280 150" stroke="white" strokeWidth="12" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+
+                                        {/* Decorative elements */}
+                                        <circle cx="320" cy="120" r="8" fill="#10b981" opacity="0.7" />
+                                        <circle cx="340" cy="300" r="6" fill="#10b981" opacity="0.5" />
+
+                                        {/* Additional curved element */}
+                                        <path d="M100 150 C120 140, 140 145, 155 160" stroke="#10b981" strokeWidth="8" fill="none" strokeLinecap="round" opacity="0.6" />
+                                    </svg>
+                                    <div className="text-2xl font-bold text-emerald-400">
+                                        ComplyAI
+                                    </div>
+                                </div>
+                                <div className="hidden md:flex space-x-8 items-center">
+                                    <a href="#features" className="hover:text-emerald-400 transition-colors">{t.features}</a>
+                                    <button onClick={() => setCurrentView('dashboard')} className="hover:text-emerald-400 transition-colors">{t.dashboard}</button>
+                                    <a href="#contact" className="hover:text-emerald-400 transition-colors">{t.contact}</a>
+
+                                    {/* Language Selector */}
+                                    <div className="relative">
+                                        <select
+                                            value={currentLanguage}
+                                            onChange={(e) => setCurrentLanguage(e.target.value)}
+                                            className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-1 text-white text-sm focus:outline-none focus:border-emerald-500"
+                                        >
+                                            <option value="eng">🇺🇸 EN</option>
+                                            <option value="uz">🇺🇿 UZ</option>
+                                            <option value="ru">🇷🇺 RU</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setCurrentView('dashboard')}
+                                    className="bg-emerald-500 hover:bg-emerald-600 px-6 py-2 rounded-lg transition-colors glow-effect"
+                                >
+                                    {t.tryDashboard}
+                                </button>
+                            </nav>
+                        </header>
+
+                    {/* Hero Section */}
+                    <section className="container mx-auto px-6 py-20 text-center">
+                        <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+                            <h1 className="text-5xl md:text-7xl font-bold mb-6">
+                                {currentLanguage === 'eng' && (
+                                    <>
+                                        AI-Powered
+                                        <span className="text-emerald-400 block">Compliance</span>
+                                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-blue-500">
+                                            System
+                                        </span>
+                                    </>
+                                )}
+                                {currentLanguage === 'uz' && (
+                                    <>
+                                        AI Asosidagi
+                                        <span className="text-emerald-400 block">Muvofiqlik</span>
+                                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-blue-500">
+                                            Tizimi
+                                        </span>
+                                    </>
+                                )}
+                                {currentLanguage === 'ru' && (
+                                    <>
+                                        Система
+                                        <span className="text-emerald-400 block">Соответствия</span>
+                                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-blue-500">
+                                            на Основе ИИ
+                                        </span>
+                                    </>
+                                )}
+                            </h1>
+                            <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
+                                {t.subtitle}
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                <button className="bg-emerald-500 hover:bg-emerald-600 px-8 py-4 rounded-lg text-lg font-semibold transition-colors glow-effect">
+                                    Start Free Trial
+                                </button>
+                                <button className="border border-emerald-500 hover:bg-emerald-500 px-8 py-4 rounded-lg text-lg font-semibold transition-colors">
+                                    Watch Demo
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Features Section */}
+                    <section id="features" className="container mx-auto px-6 py-20">
+                        <div className="text-center mb-16">
+                            <h2 className="text-4xl font-bold mb-4">Powerful Features</h2>
+                            <p className="text-xl text-gray-300">Everything you need for seamless compliance management</p>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+                            {features.map((feature, index) => (
+                                <div
+                                    key={index}
+                                    onClick={feature.action}
+                                    className="bg-slate-800/50 backdrop-blur-sm p-12 rounded-xl border border-slate-700 hover:border-emerald-500 transition-all duration-300 animate-float cursor-pointer transform hover:scale-105"
+                                    style={{ animationDelay: `${index * 0.2}s` }}
+                                >
+                                    <div className="text-6xl mb-6 text-center">{feature.icon}</div>
+                                    <h3 className="text-2xl font-semibold mb-4 text-emerald-400 text-center">{feature.title}</h3>
+                                    <p className="text-gray-300 mb-6 text-center leading-relaxed">{feature.description}</p>
+                                    <div className="text-center">
+                                        <button className="bg-emerald-500 hover:bg-emerald-600 px-8 py-3 rounded-lg font-semibold transition-colors">
+                                            {t.startNow} →
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* Stats Section */}
+                    <section className="container mx-auto px-6 py-20">
+                        <div className="bg-slate-800/30 backdrop-blur-sm rounded-2xl p-12 border border-slate-700">
+                            <div className="grid md:grid-cols-3 gap-8 text-center">
+                                <div>
+                                    <div className="text-4xl font-bold text-emerald-400 mb-2">95%</div>
+                                    <div className="text-gray-300">Compliance Accuracy</div>
+                                </div>
+                                <div>
+                                    <div className="text-4xl font-bold text-emerald-400 mb-2">80%</div>
+                                    <div className="text-gray-300">Time Saved</div>
+                                </div>
+                                <div>
+                                    <div className="text-4xl font-bold text-emerald-400 mb-2">24/7</div>
+                                    <div className="text-gray-300">AI Support</div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* CTA Section */}
+                    <section className="container mx-auto px-6 py-20 text-center">
+                        <div className="bg-gradient-to-r from-emerald-500/20 to-blue-500/20 rounded-2xl p-12 border border-emerald-500/30">
+                            <h2 className="text-4xl font-bold mb-4">Ready to Transform Your Compliance?</h2>
+                            <p className="text-xl text-gray-300 mb-8">Join IT Park companies already using ComplyAI</p>
+                            <button
+                                onClick={() => setCurrentView('dashboard')}
+                                className="bg-emerald-500 hover:bg-emerald-600 px-8 py-4 rounded-lg text-lg font-semibold transition-colors glow-effect"
+                            >
+                                Try Dashboard Now
+                            </button>
+                        </div>
+                    </section>
+
+                    {/* Choose Your Plan */}
+                    <section className="container mx-auto px-6 py-20 border-t border-slate-700">
+                        <div className="text-center mb-16">
+                            <h2 className="text-4xl font-bold mb-4">💎 {t.choosePlan}</h2>
+                            <p className="text-xl text-gray-300">{t.choosePlanDesc}</p>
+                        </div>
+
+                        {/* Pricing Tiers */}
+                        <div className="mb-16">
+                            <div className="grid md:grid-cols-3 gap-8">
+                                <div className="bg-slate-800/30 p-8 rounded-xl border border-slate-700 text-center">
+                                    <h4 className="text-xl font-semibold mb-4 text-blue-400">{t.smallBusiness}</h4>
+                                    <div className="text-4xl font-bold mb-4">$15<span className="text-lg text-gray-400">/month</span></div>
+                                    <ul className="text-left space-y-2 text-gray-300">
+                                        <li>✅ Basic AI Analysis</li>
+                                        <li>✅ Trip Report Processing</li>
+                                        <li>✅ Up to 50 documents/month</li>
+                                        <li>✅ Email Support</li>
+                                        <li>✅ Standard Templates</li>
+                                    </ul>
+                                </div>
+
+                                <div className="bg-emerald-500/10 p-8 rounded-xl border border-emerald-500 text-center relative">
+                                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-emerald-500 text-white px-4 py-1 rounded-full text-sm">
+                                        Most Popular
+                                    </div>
+                                    <h4 className="text-xl font-semibold mb-4 text-emerald-400">{t.mediumBusiness}</h4>
+                                    <div className="text-4xl font-bold mb-4">$35<span className="text-lg text-gray-400">/month</span></div>
+                                    <ul className="text-left space-y-2 text-gray-300">
+                                        <li>✅ Advanced AI Analysis</li>
+                                        <li>✅ Unlimited Documents</li>
+                                        <li>✅ E-Signature Integration</li>
+                                        <li>✅ Custom Reports</li>
+                                        <li>✅ Priority Support</li>
+                                        <li>✅ Multi-user Access</li>
+                                    </ul>
+                                </div>
+
+                                <div className="bg-slate-800/30 p-8 rounded-xl border border-slate-700 text-center">
+                                    <h4 className="text-xl font-semibold mb-4 text-purple-400">{t.largeBusiness}</h4>
+                                    <div className="text-4xl font-bold mb-4">$75<span className="text-lg text-gray-400">/month</span></div>
+                                    <ul className="text-left space-y-2 text-gray-300">
+                                        <li>✅ Enterprise AI Features</li>
+                                        <li>✅ API Access</li>
+                                        <li>✅ Custom Integrations</li>
+                                        <li>✅ Dedicated Support</li>
+                                        <li>✅ Training & Consulting</li>
+                                        <li>✅ White-label Options</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </section>
+
+                    {/* Footer */}
+                    <footer className="container mx-auto px-6 py-12 border-t border-slate-700">
+                        <div className="text-center text-gray-400">
+                            <p>&copy; 2024 ComplyAI. Made with ❤️ for IT Park resident companies.</p>
+                        </div>
+                    </footer>
+                </div>
+            );
+        }
+
+        // Dashboard View
+        if (currentView === 'dashboard') {
+            return (
+                <div className="min-h-screen gradient-bg text-white">
+                    <header className="container mx-auto px-6 py-4 border-b border-slate-700">
+                        <nav className="flex justify-between items-center">
+                            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentView('landing')}>
+                                <svg width="42" height="42" viewBox="0 0 400 400" className="flex-shrink-0">
+                                    <defs>
+                                        <linearGradient id="logoGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stopColor="#10b981" />
+                                            <stop offset="100%" stopColor="#059669" />
+                                        </linearGradient>
+                                    </defs>
+                                    <path d="M150 80 C180 60, 220 70, 250 90 C280 110, 320 140, 340 180 C350 200, 345 220, 330 240 C315 260, 290 270, 270 275 L250 280 C230 285, 210 280, 195 270 L180 260 C160 245, 145 225, 140 200 C135 175, 140 150, 150 130 Z" fill="url(#logoGradient2)" />
+                                    <path d="M170 200 L200 230 L280 150" stroke="white" strokeWidth="12" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                                    <circle cx="320" cy="120" r="8" fill="#10b981" opacity="0.7" />
+                                    <circle cx="340" cy="300" r="6" fill="#10b981" opacity="0.5" />
+                                    <path d="M100 150 C120 140, 140 145, 155 160" stroke="#10b981" strokeWidth="8" fill="none" strokeLinecap="round" opacity="0.6" />
+                                </svg>
+                                <div className="text-xl font-bold text-emerald-400">
+                                    ComplyAI
+                                </div>
+                            </div>
+                            <div className="flex space-x-4">
+                                <button onClick={() => setCurrentView('analysis')} className="px-4 py-2 rounded hover:bg-slate-700">Financial Analysis</button>
+                                <button onClick={() => setCurrentView('trips')} className="px-4 py-2 rounded hover:bg-slate-700">Business Trips</button>
+                            </div>
+                        </nav>
+                    </header>
+
+                    <div className="container mx-auto px-6 py-8">
+                        <h1 className="text-4xl font-bold mb-8 text-center">Choose Your Service</h1>
+
+                        {/* Main Services */}
+                        <div className="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+                            <div
+                                onClick={() => setCurrentView('analysis')}
+                                className="bg-slate-800/50 p-12 rounded-xl border border-slate-700 hover:border-emerald-500 transition-all duration-300 cursor-pointer transform hover:scale-105"
+                            >
+                                <div className="text-6xl mb-6 text-center">📊</div>
+                                <h3 className="text-2xl font-semibold mb-4 text-emerald-400 text-center">AI Financial Analysis</h3>
+                                <p className="text-gray-300 mb-6 text-center">Upload your business or financial reports and get detailed AI-powered accounting analysis and auditing</p>
+                                <div className="text-center">
+                                    <button className="bg-emerald-500 hover:bg-emerald-600 px-8 py-3 rounded-lg font-semibold">
+                                        Upload Documents
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div
+                                onClick={() => setCurrentView('trips')}
+                                className="bg-slate-800/50 p-12 rounded-xl border border-slate-700 hover:border-blue-500 transition-all duration-300 cursor-pointer transform hover:scale-105"
+                            >
+                                <div className="text-6xl mb-6 text-center">✈️</div>
+                                <h3 className="text-2xl font-semibold mb-4 text-blue-400 text-center">Business Trip Reports</h3>
+                                <p className="text-gray-300 mb-6 text-center">Submit your business trip expenses with electronic signature (E-Imzo) integration</p>
+                                <div className="text-center">
+                                    <button className="bg-blue-500 hover:bg-blue-600 px-8 py-3 rounded-lg font-semibold">
+                                        Submit Trip Report
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Quick Stats */}
+                        <div className="grid md:grid-cols-3 gap-6 mt-12 max-w-3xl mx-auto">
+                            <div className="bg-slate-800/30 p-6 rounded-xl border border-slate-700 text-center">
+                                <div className="text-3xl font-bold text-emerald-400">{uploadedDocuments.length}</div>
+                                <div className="text-gray-300">Documents Analyzed</div>
+                            </div>
+                            <div className="bg-slate-800/30 p-6 rounded-xl border border-slate-700 text-center">
+                                <div className="text-3xl font-bold text-blue-400">{businessTrips.length}</div>
+                                <div className="text-gray-300">Trip Reports</div>
+                            </div>
+                            <div className="bg-slate-800/30 p-6 rounded-xl border border-slate-700 text-center">
+                                <div className="text-3xl font-bold text-yellow-400">{analysisResults.length}</div>
+                                <div className="text-gray-300">AI Analysis Reports</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+
+
+        // Financial Analysis View
+        if (currentView === 'analysis') {
+            return (
+                <div className="min-h-screen gradient-bg text-white">
+                    <header className="container mx-auto px-6 py-4 border-b border-slate-700">
+                        <nav className="flex justify-between items-center">
+                            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentView('landing')}>
+                                <svg width="42" height="42" viewBox="0 0 400 400" className="flex-shrink-0">
+                                    <defs>
+                                        <linearGradient id="logoGradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stopColor="#10b981" />
+                                            <stop offset="100%" stopColor="#059669" />
+                                        </linearGradient>
+                                    </defs>
+                                    <path d="M150 80 C180 60, 220 70, 250 90 C280 110, 320 140, 340 180 C350 200, 345 220, 330 240 C315 260, 290 270, 270 275 L250 280 C230 285, 210 280, 195 270 L180 260 C160 245, 145 225, 140 200 C135 175, 140 150, 150 130 Z" fill="url(#logoGradient3)" />
+                                    <path d="M170 200 L200 230 L280 150" stroke="white" strokeWidth="12" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                                    <circle cx="320" cy="120" r="8" fill="#10b981" opacity="0.7" />
+                                    <circle cx="340" cy="300" r="6" fill="#10b981" opacity="0.5" />
+                                    <path d="M100 150 C120 140, 140 145, 155 160" stroke="#10b981" strokeWidth="8" fill="none" strokeLinecap="round" opacity="0.6" />
+                                </svg>
+                                <div className="text-xl font-bold text-emerald-400">
+                                    ComplyAI
+                                </div>
+                            </div>
+                            <button onClick={() => setCurrentView('dashboard')} className="px-4 py-2 rounded hover:bg-slate-700">← Back to Dashboard</button>
+                        </nav>
+                    </header>
+
+                    <div className="container mx-auto px-6 py-8">
+                        <div className="text-center mb-8">
+                            <h1 className="text-4xl font-bold mb-4">📊 AI Financial Analysis</h1>
+                            <p className="text-xl text-gray-300 mb-8">Upload your business or financial reports to get detailed AI-powered accounting analysis</p>
+                            <div className="flex justify-center">
+                                <input
+                                    type="file"
+                                    id="fileUpload"
+                                    multiple
+                                    accept=".pdf,.xlsx,.xls,.csv"
+                                    onChange={handleFileUpload}
+                                    className="hidden"
+                                />
+                                <label
+                                    htmlFor="fileUpload"
+                                    className="bg-emerald-500 hover:bg-emerald-600 px-8 py-4 rounded-lg cursor-pointer flex items-center gap-3 text-lg font-semibold glow-effect"
+                                >
+                                    📁 Upload Financial Documents
+                                </label>
+                            </div>
+                        </div>
+
+                        <div className="grid lg:grid-cols-2 gap-8">
+                            {/* Uploaded Documents */}
+                            <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                                <h3 className="text-2xl font-semibold mb-4">Uploaded Documents</h3>
+                                <div className="space-y-4">
+                                    {uploadedDocuments.map(doc => (
+                                        <div key={doc.id} className="bg-slate-700/50 p-4 rounded-lg border border-slate-600">
+                                            <div className="flex justify-between items-start mb-2">
+                                                <div>
+                                                    <h4 className="font-semibold">{doc.name}</h4>
+                                                    <p className="text-sm text-gray-400">{doc.type} • {doc.size}</p>
+                                                    <p className="text-sm text-gray-400">Uploaded: {doc.uploadDate}</p>
+                                                </div>
+                                                <div className={`px-3 py-1 rounded text-sm ${getStatusColor(doc.status)}`}>
+                                                    {doc.status}
+                                                </div>
+                                            </div>
+                                            {doc.status === 'Analyzed' && (
+                                                <button
+                                                    onClick={() => {
+                                                        const analysis = analysisResults.find(a => a.documentName === doc.name);
+                                                        if (analysis) {
+                                                            setCurrentView('analysis');
+                                                            // You could set a selected analysis state here
+                                                        }
+                                                    }}
+                                                    className="bg-emerald-500 hover:bg-emerald-600 px-4 py-2 rounded text-sm"
+                                                >
+                                                    View Analysis
+                                                </button>
+                                            )}
+                                        </div>
+                                    ))}
+                                    {uploadedDocuments.length === 0 && (
+                                        <div className="text-center py-8 text-gray-400">
+                                            <div className="text-4xl mb-4">📄</div>
+                                            <p>No documents uploaded yet</p>
+                                            <p className="text-sm">Upload financial documents to get AI analysis</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Analysis Results */}
+                            <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                                <h3 className="text-2xl font-semibold mb-4">Recent Analysis Results</h3>
+                                <div className="space-y-4">
+                                    {analysisResults.slice(0, 3).map(analysis => (
+                                        <div key={analysis.id} className="bg-slate-700/50 p-4 rounded-lg border border-slate-600">
+                                            <div className="flex justify-between items-start mb-3">
+                                                <div>
+                                                    <h4 className="font-semibold">{analysis.documentName}</h4>
+                                                    <p className="text-sm text-gray-400">{analysis.analysisType}</p>
+                                                </div>
+                                                <div className="text-right">
+                                                    <div className={`text-2xl font-bold ${
+                                                        analysis.score >= 90 ? 'text-green-400' :
+                                                        analysis.score >= 80 ? 'text-yellow-400' : 'text-red-400'
+                                                    }`}>
+                                                        {analysis.score}%
+                                                    </div>
+                                                    <div className="text-sm text-gray-400">Score</div>
+                                                </div>
+                                            </div>
+
+                                            <div className="mb-3">
+                                                <h5 className="font-medium mb-2">Key Findings:</h5>
+                                                {analysis.findings.slice(0, 2).map((finding, index) => (
+                                                    <div key={index} className={`text-sm p-2 rounded mb-1 ${
+                                                        finding.type === 'success' ? 'bg-green-500/10 text-green-400' :
+                                                        finding.type === 'warning' ? 'bg-yellow-500/10 text-yellow-400' :
+                                                        'bg-red-500/10 text-red-400'
+                                                    }`}>
+                                                        {finding.message}
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            <button
+                                                onClick={() => setCurrentView('analysis')}
+                                                className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded text-sm"
+                                            >
+                                                View Full Analysis
+                                            </button>
+                                        </div>
+                                    ))}
+                                    {analysisResults.length === 0 && (
+                                        <div className="text-center py-8 text-gray-400">
+                                            <div className="text-4xl mb-4">📊</div>
+                                            <p>No analysis results yet</p>
+                                            <p className="text-sm">Upload documents to see AI analysis</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Supported Document Types */}
+                        <div className="mt-8 bg-slate-800/30 p-6 rounded-xl border border-slate-700">
+                            <h3 className="text-xl font-semibold mb-4">Supported Document Types</h3>
+                            <div className="grid md:grid-cols-4 gap-4">
+                                <div className="text-center p-4 bg-slate-700/30 rounded-lg">
+                                    <div className="text-2xl mb-2">📊</div>
+                                    <div className="font-medium">Financial Statements</div>
+                                    <div className="text-sm text-gray-400">Excel, CSV files</div>
+                                </div>
+                                <div className="text-center p-4 bg-slate-700/30 rounded-lg">
+                                    <div className="text-2xl mb-2">🧾</div>
+                                    <div className="font-medium">Invoices & Receipts</div>
+                                    <div className="text-sm text-gray-400">PDF, Image files</div>
+                                </div>
+                                <div className="text-center p-4 bg-slate-700/30 rounded-lg">
+                                    <div className="text-2xl mb-2">🏦</div>
+                                    <div className="font-medium">Bank Statements</div>
+                                    <div className="text-sm text-gray-400">PDF, Excel files</div>
+                                </div>
+                                <div className="text-center p-4 bg-slate-700/30 rounded-lg">
+                                    <div className="text-2xl mb-2">📋</div>
+                                    <div className="font-medium">Business Reports</div>
+                                    <div className="text-sm text-gray-400">Word, PDF files</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Business Trip Reports View
+        if (currentView === 'trips') {
+
+            return (
+                <div className="min-h-screen gradient-bg text-white">
+                    <header className="container mx-auto px-6 py-4 border-b border-slate-700">
+                        <nav className="flex justify-between items-center">
+                            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentView('landing')}>
+                                <svg width="42" height="42" viewBox="0 0 400 400" className="flex-shrink-0">
+                                    <defs>
+                                        <linearGradient id="logoGradient4" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stopColor="#10b981" />
+                                            <stop offset="100%" stopColor="#059669" />
+                                        </linearGradient>
+                                    </defs>
+                                    <path d="M150 80 C180 60, 220 70, 250 90 C280 110, 320 140, 340 180 C350 200, 345 220, 330 240 C315 260, 290 270, 270 275 L250 280 C230 285, 210 280, 195 270 L180 260 C160 245, 145 225, 140 200 C135 175, 140 150, 150 130 Z" fill="url(#logoGradient4)" />
+                                    <path d="M170 200 L200 230 L280 150" stroke="white" strokeWidth="12" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                                    <circle cx="320" cy="120" r="8" fill="#10b981" opacity="0.7" />
+                                    <circle cx="340" cy="300" r="6" fill="#10b981" opacity="0.5" />
+                                    <path d="M100 150 C120 140, 140 145, 155 160" stroke="#10b981" strokeWidth="8" fill="none" strokeLinecap="round" opacity="0.6" />
+                                </svg>
+                                <div className="text-xl font-bold text-emerald-400">
+                                    ComplyAI
+                                </div>
+                            </div>
+                            <button onClick={() => setCurrentView('dashboard')} className="px-4 py-2 rounded hover:bg-slate-700">← Back to Dashboard</button>
+                        </nav>
+                    </header>
+
+                    <div className="container mx-auto px-6 py-8">
+                        <div className="text-center mb-8">
+                            <h1 className="text-4xl font-bold mb-4">✈️ Business Trip Report Submission</h1>
+                            <p className="text-xl text-gray-300 mb-4">Upload your completed company trip report forms</p>
+                            <p className="text-gray-400 mb-8">Download the official IT Park form, fill it with your expenses, and upload it back</p>
+
+                            <div className="flex justify-center gap-4 mb-8">
+                                <button
+                                    onClick={() => {
+                                        addNotification('info', 'Official IT Park business trip form downloaded');
+                                    }}
+                                    className="bg-emerald-500 hover:bg-emerald-600 px-6 py-3 rounded-lg font-semibold flex items-center gap-2"
+                                >
+                                    📄 Download Official Form
+                                </button>
+
+                                <input
+                                    type="file"
+                                    id="tripFileUpload"
+                                    multiple
+                                    accept=".pdf,.doc,.docx,.xlsx,.xls"
+                                    onChange={(e) => {
+                                        const files = Array.from(e.target.files);
+                                        files.forEach(file => {
+                                            const newReport = {
+                                                id: businessTrips.length + 1,
+                                                fileName: file.name,
+                                                fileSize: formatFileSize(file.size),
+                                                uploadDate: new Date().toISOString().split('T')[0],
+                                                status: 'Uploaded - Under Review',
+                                                employeeName: 'Current Employee',
+                                                department: 'IT Department'
+                                            };
+                                            setBusinessTrips(prev => [newReport, ...prev]);
+                                            addNotification('success', `Trip report ${file.name} uploaded successfully`);
+                                        });
+                                    }}
+                                    className="hidden"
+                                />
+                                <label
+                                    htmlFor="tripFileUpload"
+                                    className="bg-blue-500 hover:bg-blue-600 px-6 py-3 rounded-lg font-semibold cursor-pointer flex items-center gap-2"
+                                >
+                                    📁 Upload Completed Form
+                                </label>
+                            </div>
+                        </div>
+
+                        {/* Instructions */}
+                        <div className="bg-slate-800/30 p-6 rounded-xl border border-slate-700 mb-8">
+                            <h3 className="text-xl font-semibold mb-4">📋 How to Submit Your Trip Report</h3>
+                            <div className="grid md:grid-cols-3 gap-6">
+                                <div className="text-center">
+                                    <div className="text-3xl mb-3">📄</div>
+                                    <h4 className="font-semibold mb-2">1. Download Form</h4>
+                                    <p className="text-sm text-gray-400">Get the official IT Park business trip report form</p>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-3xl mb-3">✏️</div>
+                                    <h4 className="font-semibold mb-2">2. Fill Details</h4>
+                                    <p className="text-sm text-gray-400">Complete all sections with your trip expenses and receipts</p>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-3xl mb-3">📤</div>
+                                    <h4 className="font-semibold mb-2">3. Upload & Submit</h4>
+                                    <p className="text-sm text-gray-400">Upload the completed form for processing</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* File Management Section */}
+                        <div className="bg-slate-800/30 p-8 rounded-xl border border-slate-700">
+                            <h3 className="text-2xl font-semibold mb-6 text-center">📁 File Management</h3>
+                            <div className="grid md:grid-cols-2 gap-8">
+                                <div className="text-center">
+                                    <div className="bg-emerald-500/10 p-8 rounded-xl border border-emerald-500/30 mb-4">
+                                        <div className="text-4xl mb-4">📄</div>
+                                        <h4 className="text-xl font-semibold mb-3">Download Official Form</h4>
+                                        <p className="text-gray-400 mb-6">Get the standard IT Park business trip report template</p>
+                                        <button
+                                            onClick={() => {
+                                                addNotification('success', 'Official IT Park business trip form downloaded successfully');
+                                            }}
+                                            className="bg-emerald-500 hover:bg-emerald-600 px-6 py-3 rounded-lg font-semibold"
+                                        >
+                                            📄 Download Form
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="text-center">
+                                    <div className="bg-blue-500/10 p-8 rounded-xl border border-blue-500/30 mb-4">
+                                        <div className="text-4xl mb-4">📤</div>
+                                        <h4 className="text-xl font-semibold mb-3">Upload Completed Form</h4>
+                                        <p className="text-gray-400 mb-6">Submit your filled business trip report to IT Park</p>
+                                        <input
+                                            type="file"
+                                            id="tripFileUpload2"
+                                            multiple
+                                            accept=".pdf,.doc,.docx,.xlsx,.xls"
+                                            onChange={(e) => {
+                                                const files = Array.from(e.target.files);
+                                                files.forEach(file => {
+                                                    addNotification('success', `Trip report "${file.name}" uploaded successfully and sent to IT Park`);
+                                                });
+                                            }}
+                                            className="hidden"
+                                        />
+                                        <label
+                                            htmlFor="tripFileUpload2"
+                                            className="bg-blue-500 hover:bg-blue-600 px-6 py-3 rounded-lg font-semibold cursor-pointer inline-block"
+                                        >
+                                            📤 Upload Form
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mt-8 text-center">
+                                <div className="bg-slate-700/30 p-6 rounded-lg">
+                                    <h5 className="font-semibold mb-3">📋 Supported File Formats</h5>
+                                    <div className="flex justify-center gap-4 text-sm text-gray-400">
+                                        <span>📄 PDF</span>
+                                        <span>📊 Excel (.xlsx, .xls)</span>
+                                        <span>📝 Word (.doc, .docx)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+
+
+        // Detailed Analysis View
+        if (currentView === 'analysis') {
+            const selectedAnalysis = analysisResults[0]; // For demo, show first analysis
+
+            return (
+                <div className="min-h-screen gradient-bg text-white">
+                    <header className="container mx-auto px-6 py-4 border-b border-slate-700">
+                        <nav className="flex justify-between items-center">
+                            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentView('landing')}>
+                                <svg width="42" height="42" viewBox="0 0 400 400" className="flex-shrink-0">
+                                    <defs>
+                                        <linearGradient id="logoGradient5" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stopColor="#10b981" />
+                                            <stop offset="100%" stopColor="#059669" />
+                                        </linearGradient>
+                                    </defs>
+                                    <path d="M150 80 C180 60, 220 70, 250 90 C280 110, 320 140, 340 180 C350 200, 345 220, 330 240 C315 260, 290 270, 270 275 L250 280 C230 285, 210 280, 195 270 L180 260 C160 245, 145 225, 140 200 C135 175, 140 150, 150 130 Z" fill="url(#logoGradient5)" />
+                                    <path d="M170 200 L200 230 L280 150" stroke="white" strokeWidth="12" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                                    <circle cx="320" cy="120" r="8" fill="#10b981" opacity="0.7" />
+                                    <circle cx="340" cy="300" r="6" fill="#10b981" opacity="0.5" />
+                                    <path d="M100 150 C120 140, 140 145, 155 160" stroke="#10b981" strokeWidth="8" fill="none" strokeLinecap="round" opacity="0.6" />
+                                </svg>
+                                <div className="text-xl font-bold text-emerald-400">
+                                    ComplyAI
+                                </div>
+                            </div>
+                            <button onClick={() => setCurrentView('analysis')} className="px-4 py-2 rounded hover:bg-slate-700">← Back to Analysis</button>
+                        </nav>
+                    </header>
+
+                    <div className="container mx-auto px-6 py-8">
+                        <div className="mb-8">
+                            <h1 className="text-4xl font-bold mb-2">📊 AI Analysis Report</h1>
+                            <p className="text-gray-400">Document: {selectedAnalysis?.documentName}</p>
+                            <p className="text-gray-400">Analysis Type: {selectedAnalysis?.analysisType}</p>
+                        </div>
+
+                        {selectedAnalysis && (
+                            <div className="grid lg:grid-cols-3 gap-8">
+                                {/* Overall Score */}
+                                <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                                    <h3 className="text-xl font-semibold mb-4">Overall Score</h3>
+                                    <div className={`text-6xl font-bold mb-4 ${
+                                        selectedAnalysis.score >= 90 ? 'text-green-400' :
+                                        selectedAnalysis.score >= 80 ? 'text-yellow-400' : 'text-red-400'
+                                    }`}>
+                                        {selectedAnalysis.score}%
+                                    </div>
+                                    <div className="w-full bg-slate-700 rounded-full h-4">
+                                        <div
+                                            className={`h-4 rounded-full transition-all duration-1000 ${
+                                                selectedAnalysis.score >= 90 ? 'bg-green-500' :
+                                                selectedAnalysis.score >= 80 ? 'bg-yellow-500' : 'bg-red-500'
+                                            }`}
+                                            style={{width: `${selectedAnalysis.score}%`}}
+                                        ></div>
+                                    </div>
+                                    <p className="text-gray-400 mt-4">
+                                        {selectedAnalysis.score >= 90 ? 'Excellent compliance level' :
+                                         selectedAnalysis.score >= 80 ? 'Good with minor issues' : 'Needs attention'}
+                                    </p>
+                                </div>
+
+                                {/* Key Findings */}
+                                <div className="lg:col-span-2 bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                                    <h3 className="text-xl font-semibold mb-4">Detailed Findings</h3>
+                                    <div className="space-y-3">
+                                        {selectedAnalysis.findings.map((finding, index) => (
+                                            <div key={index} className={`p-4 rounded-lg border ${
+                                                finding.type === 'success' ? 'bg-green-500/10 border-green-500/30' :
+                                                finding.type === 'warning' ? 'bg-yellow-500/10 border-yellow-500/30' :
+                                                'bg-red-500/10 border-red-500/30'
+                                            }`}>
+                                                <div className="flex items-start gap-3">
+                                                    <div className={`text-xl ${
+                                                        finding.type === 'success' ? 'text-green-400' :
+                                                        finding.type === 'warning' ? 'text-yellow-400' : 'text-red-400'
+                                                    }`}>
+                                                        {finding.type === 'success' ? '✅' : finding.type === 'warning' ? '⚠️' : '❌'}
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <p className="font-medium">{finding.message}</p>
+                                                        <p className={`text-sm mt-1 ${
+                                                            finding.severity === 'high' ? 'text-red-400' :
+                                                            finding.severity === 'medium' ? 'text-yellow-400' : 'text-green-400'
+                                                        }`}>
+                                                            Severity: {finding.severity.toUpperCase()}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Recommendations */}
+                                <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                                    <h3 className="text-xl font-semibold mb-4">AI Recommendations</h3>
+                                    <div className="space-y-3">
+                                        {selectedAnalysis.recommendations.map((rec, index) => (
+                                            <div key={index} className="flex items-start gap-3 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                                                <div className="text-blue-400 text-lg">💡</div>
+                                                <p className="text-sm">{rec}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Compliance Issues */}
+                                <div className="lg:col-span-2 bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                                    <h3 className="text-xl font-semibold mb-4">Compliance Status</h3>
+                                    <div className="space-y-3">
+                                        {selectedAnalysis.complianceIssues.map((issue, index) => (
+                                            <div key={index} className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
+                                                <span>{issue.split(':')[0]}:</span>
+                                                <span className={`font-medium ${
+                                                    issue.includes('Compliant') ? 'text-green-400' :
+                                                    issue.includes('missing') || issue.includes('attention') ? 'text-red-400' :
+                                                    'text-yellow-400'
+                                                }`}>
+                                                    {issue.split(':')[1]?.trim()}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Actions */}
+                                <div className="lg:col-span-3 bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                                    <h3 className="text-xl font-semibold mb-4">Actions</h3>
+                                    <div className="flex flex-wrap gap-4">
+                                        <button className="bg-emerald-500 hover:bg-emerald-600 px-6 py-2 rounded-lg">
+                                            Generate Compliance Report
+                                        </button>
+                                        <button className="bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded-lg">
+                                            Export Analysis (PDF)
+                                        </button>
+                                        <button className="bg-purple-500 hover:bg-purple-600 px-6 py-2 rounded-lg">
+                                            Schedule Follow-up
+                                        </button>
+                                        <button className="bg-orange-500 hover:bg-orange-600 px-6 py-2 rounded-lg">
+                                            Send to Accountant
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        // Default to landing page
+        return <div>Loading...</div>;
+    };
+
+        // Render the component
+        ReactDOM.render(<ComplyAI />, document.getElementById('root'));
+    </script>
+</body>
+</html>
