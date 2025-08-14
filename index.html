@@ -182,11 +182,8 @@
                     { id: 3, name: 'Monthly Revenue Report', status: 'Draft', date: '2024-12-01', type: 'monthly' }
                 ]);
 
-                setBusinessTrips([
-                    { id: 1, destination: 'Dubai', purpose: 'Tech Conference', status: 'Completed', amount: 2500, date: '2024-11-15' },
-                    { id: 2, destination: 'Istanbul', purpose: 'Client Meeting', status: 'Pending Report', amount: 1200, date: '2024-12-01' },
-                    { id: 3, destination: 'Moscow', purpose: 'Training', status: 'Approved', amount: 1800, date: '2024-12-20' }
-                ]);
+                // Keep business trips empty for clean interface
+                setBusinessTrips([]);
 
                 setNotifications([
                     { id: 1, type: 'deadline', message: 'Q4 Report due in 5 days', priority: 'high', time: '2 hours ago' },
@@ -920,42 +917,45 @@ Date: __________________________
                         {/* Pricing Tiers */}
                         <div className="mb-8 md:mb-16">
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                                {/* Starter Plan */}
                                 <div className={`p-4 md:p-8 rounded-xl border text-center transition-all duration-300 ${
-                                    selectedPlan?.name === 'Small Business'
+                                    selectedPlan?.name === 'Starter Plan'
                                         ? 'bg-blue-500/20 border-blue-500 transform scale-105'
                                         : 'bg-slate-800/30 border-slate-700 hover:border-blue-500'
                                 }`}>
-                                    <h4 className="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-blue-400">{t.smallBusiness}</h4>
-                                    <div className="text-2xl md:text-4xl font-bold mb-3 md:mb-4">$15<span className="text-sm md:text-lg text-gray-400">/month</span></div>
+                                    <h4 className="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-blue-400">Starter Plan</h4>
+                                    <div className="text-2xl md:text-4xl font-bold mb-3 md:mb-4">$50<span className="text-sm md:text-lg text-gray-400">/month</span></div>
                                     <ul className="text-left space-y-1 md:space-y-2 text-gray-300 mb-4 md:mb-6 text-sm md:text-base">
                                         <li>✅ Basic AI Analysis</li>
                                         <li>✅ Trip Report Processing</li>
-                                        <li>✅ Up to 50 documents/month</li>
+                                        <li>✅ Up to 100 documents/month</li>
                                         <li>✅ Email Support</li>
                                         <li>✅ Standard Templates</li>
+                                        <li>✅ IT Park Compliance</li>
                                     </ul>
                                     <button
-                                        onClick={() => selectPlan('Small Business', 15)}
+                                        onClick={() => selectPlan('Starter Plan', 50)}
                                         className={`w-full py-2 md:py-3 px-4 md:px-6 rounded-lg font-semibold transition-colors text-sm md:text-base ${
-                                            selectedPlan?.name === 'Small Business'
+                                            selectedPlan?.name === 'Starter Plan'
                                                 ? 'bg-blue-500 text-white'
                                                 : 'bg-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white'
                                         }`}
                                     >
-                                        {selectedPlan?.name === 'Small Business' ? '✓ Selected' : 'Select Plan'}
+                                        {selectedPlan?.name === 'Starter Plan' ? '✓ Selected' : 'Select Plan'}
                                     </button>
                                 </div>
 
+                                {/* Professional Plan */}
                                 <div className={`p-8 rounded-xl border text-center relative transition-all duration-300 ${
-                                    selectedPlan?.name === 'Medium Business'
+                                    selectedPlan?.name === 'Professional Plan'
                                         ? 'bg-emerald-500/30 border-emerald-400 transform scale-105'
                                         : 'bg-emerald-500/10 border-emerald-500 hover:bg-emerald-500/20'
                                 }`}>
                                     <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-emerald-500 text-white px-4 py-1 rounded-full text-sm">
                                         Most Popular
                                     </div>
-                                    <h4 className="text-xl font-semibold mb-4 text-emerald-400">{t.mediumBusiness}</h4>
-                                    <div className="text-4xl font-bold mb-4">$35<span className="text-lg text-gray-400">/month</span></div>
+                                    <h4 className="text-xl font-semibold mb-4 text-emerald-400">Professional Plan</h4>
+                                    <div className="text-4xl font-bold mb-4">$150<span className="text-lg text-gray-400">/month</span></div>
                                     <ul className="text-left space-y-2 text-gray-300 mb-6">
                                         <li>✅ Advanced AI Analysis</li>
                                         <li>✅ Unlimited Documents</li>
@@ -963,43 +963,46 @@ Date: __________________________
                                         <li>✅ Custom Reports</li>
                                         <li>✅ Priority Support</li>
                                         <li>✅ Multi-user Access</li>
+                                        <li>✅ API Access</li>
                                     </ul>
                                     <button
-                                        onClick={() => selectPlan('Medium Business', 35)}
+                                        onClick={() => selectPlan('Professional Plan', 150)}
                                         className={`w-full py-3 px-6 rounded-lg font-semibold transition-colors ${
-                                            selectedPlan?.name === 'Medium Business'
+                                            selectedPlan?.name === 'Professional Plan'
                                                 ? 'bg-emerald-500 text-white'
                                                 : 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white'
                                         }`}
                                     >
-                                        {selectedPlan?.name === 'Medium Business' ? '✓ Selected' : 'Select Plan'}
+                                        {selectedPlan?.name === 'Professional Plan' ? '✓ Selected' : 'Select Plan'}
                                     </button>
                                 </div>
 
+                                {/* Enterprise Plan */}
                                 <div className={`p-8 rounded-xl border text-center transition-all duration-300 ${
-                                    selectedPlan?.name === 'Large Business'
+                                    selectedPlan?.name === 'Enterprise Plan'
                                         ? 'bg-purple-500/20 border-purple-500 transform scale-105'
                                         : 'bg-slate-800/30 border-slate-700 hover:border-purple-500'
                                 }`}>
-                                    <h4 className="text-xl font-semibold mb-4 text-purple-400">{t.largeBusiness}</h4>
-                                    <div className="text-4xl font-bold mb-4">$75<span className="text-lg text-gray-400">/month</span></div>
+                                    <h4 className="text-xl font-semibold mb-4 text-purple-400">Enterprise Plan</h4>
+                                    <div className="text-4xl font-bold mb-4">$500<span className="text-lg text-gray-400">/month</span></div>
                                     <ul className="text-left space-y-2 text-gray-300 mb-6">
                                         <li>✅ Enterprise AI Features</li>
-                                        <li>✅ API Access</li>
+                                        <li>✅ Full API Access</li>
                                         <li>✅ Custom Integrations</li>
                                         <li>✅ Dedicated Support</li>
                                         <li>✅ Training & Consulting</li>
-                                        <li>✅ White-label Options</li>
+                                        <li>✅ White-label Solution</li>
+                                        <li>✅ Custom Branding</li>
                                     </ul>
                                     <button
-                                        onClick={() => selectPlan('Large Business', 75)}
+                                        onClick={() => selectPlan('Enterprise Plan', 500)}
                                         className={`w-full py-3 px-6 rounded-lg font-semibold transition-colors ${
-                                            selectedPlan?.name === 'Large Business'
+                                            selectedPlan?.name === 'Enterprise Plan'
                                                 ? 'bg-purple-500 text-white'
                                                 : 'bg-purple-500/20 text-purple-400 hover:bg-purple-500 hover:text-white'
                                         }`}
                                     >
-                                        {selectedPlan?.name === 'Large Business' ? '✓ Selected' : 'Select Plan'}
+                                        {selectedPlan?.name === 'Enterprise Plan' ? '✓ Selected' : 'Select Plan'}
                                     </button>
                                 </div>
                             </div>
@@ -1556,59 +1559,17 @@ Date: __________________________
                                 </div>
                             </div>
 
-                            {/* Submitted Trip Reports */}
-                            {businessTrips.length > 0 && (
-                                <div className="mt-12">
-                                    <h3 className="text-2xl font-semibold mb-6 text-center">📋 Submitted Trip Reports</h3>
-                                    <div className="space-y-4">
-                                        {businessTrips.slice(0, 5).map(trip => (
-                                            <div key={trip.id} className="bg-slate-800/50 p-6 rounded-xl border border-slate-700">
-                                                <div className="flex justify-between items-start mb-4">
-                                                    <div>
-                                                        <h4 className="font-semibold text-lg">{trip.destination || trip.fileName}</h4>
-                                                        <p className="text-gray-400">{trip.purpose || 'Business Trip Report'}</p>
-                                                        <p className="text-sm text-gray-500">
-                                                            {trip.date || trip.uploadDate} • ${trip.amount || 'Amount TBD'}
-                                                        </p>
-                                                    </div>
-                                                    <div className={`px-3 py-1 rounded text-sm ${
-                                                        trip.status === 'Completed' || trip.status === 'E-Signed & Submitted' ? 'bg-green-500/20 text-green-400' :
-                                                        trip.status === 'Approved' ? 'bg-blue-500/20 text-blue-400' :
-                                                        trip.status === 'Pending Report' || trip.status === 'Pending E-Signature' ? 'bg-yellow-500/20 text-yellow-400' :
-                                                        'bg-gray-500/20 text-gray-400'
-                                                    }`}>
-                                                        {trip.status}
-                                                    </div>
-                                                </div>
-                                                <div className="flex gap-2">
-                                                    <button
-                                                        onClick={() => viewTripDetails(trip)}
-                                                        className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded text-sm"
-                                                    >
-                                                        View Details
-                                                    </button>
-                                                    {trip.status === 'Pending E-Signature' && (
-                                                        <button
-                                                            onClick={() => signTripReport(trip.id)}
-                                                            className="bg-emerald-500 hover:bg-emerald-600 px-4 py-2 rounded text-sm"
-                                                        >
-                                                            E-Sign Report
-                                                        </button>
-                                                    )}
-                                                    {trip.status === 'Pending Report' && (
-                                                        <button
-                                                            onClick={() => approveTripReport(trip.id)}
-                                                            className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded text-sm"
-                                                        >
-                                                            Approve
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
+                            {/* Clean Success Message */}
+                            <div className="mt-12 text-center">
+                                <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-6 max-w-2xl mx-auto">
+                                    <div className="text-3xl mb-4">✅</div>
+                                    <h3 className="text-xl font-semibold mb-2 text-emerald-400">Simple & Efficient Process</h3>
+                                    <p className="text-gray-300">
+                                        Download the form, fill it with your trip details, and upload it back.
+                                        Your reports are automatically sent to IT Park compliance system.
+                                    </p>
                                 </div>
-                            )}
+                            </div>
                         </div>
                     </div>
                 </div>
