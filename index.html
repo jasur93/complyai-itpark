@@ -105,6 +105,10 @@
             background-clip: text;
             text-shadow: 0 0 30px rgba(16, 185, 129, 0.5);
             filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+            letter-spacing: 0.05em;
+            font-weight: 900;
+            text-stroke: 1px rgba(255, 255, 255, 0.1);
+            -webkit-text-stroke: 1px rgba(255, 255, 255, 0.1);
         }
 
         @keyframes gradient-shift {
@@ -698,7 +702,10 @@ Submit to IT Park compliance department within 7 days.
                                 </div>
 
                                 <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black mb-8 text-center relative z-10">
-                                    <span className="hero-title block mb-4 drop-shadow-2xl">{t.title}</span>
+                                    <span className="hero-title block mb-4 drop-shadow-2xl" style={{
+                                        textShadow: '0 0 30px rgba(16, 185, 129, 0.5), 0 0 10px rgba(255, 255, 255, 0.3), 1px 1px 2px rgba(255, 255, 255, 0.2), -1px -1px 2px rgba(255, 255, 255, 0.2)',
+                                        WebkitTextStroke: '0.5px rgba(255, 255, 255, 0.2)'
+                                    }}>{t.title}</span>
                                     <div className="flex justify-center items-center gap-6 mt-6">
                                         <div className="h-2 w-24 sm:w-32 bg-gradient-to-r from-emerald-400 to-blue-500 rounded-full animate-pulse-slow shadow-lg"></div>
                                         <span className="text-4xl sm:text-5xl animate-bounce-in drop-shadow-lg">🚀</span>
