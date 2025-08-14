@@ -31,10 +31,83 @@
 
         const ComplyAI = () => {
             const [currentView, setCurrentView] = useState('landing');
+            const [currentLanguage, setCurrentLanguage] = useState('eng');
             const [uploadedDocuments, setUploadedDocuments] = useState([]);
             const [analysisResults, setAnalysisResults] = useState([]);
             const [selectedAnalysis, setSelectedAnalysis] = useState(null);
             const [notifications, setNotifications] = useState([]);
+
+            // Multi-language translations
+            const translations = {
+                eng: {
+                    title: "ComplyAI",
+                    subtitle: "AI-powered compliance management system for IT Park resident companies",
+                    features: "Features",
+                    dashboard: "Dashboard",
+                    contact: "Contact",
+                    financialAnalysis: "AI Financial Analysis",
+                    financialAnalysisDesc: "Upload business/financial reports and get detailed AI-powered accounting analysis and auditing",
+                    businessTrips: "Business Trip Reports",
+                    businessTripsDesc: "Download form, fill with expenses, upload back to IT Park system",
+                    choosePlan: "Choose Your Plan",
+                    choosePlanDesc: "Select the perfect plan for your business needs",
+                    smallBusiness: "Small Business",
+                    mediumBusiness: "Medium Business",
+                    largeBusiness: "Large Business",
+                    startNow: "Start Now",
+                    tryDashboard: "Try Dashboard",
+                    startFreeTrial: "Start Free Trial",
+                    watchDemo: "Watch Demo",
+                    powerfulFeatures: "Powerful Features",
+                    featuresDesc: "Everything you need for seamless compliance management"
+                },
+                uz: {
+                    title: "ComplyAI",
+                    subtitle: "IT Park rezident kompaniyalari uchun AI-ga asoslangan muvofiqlik boshqaruv tizimi",
+                    features: "Xususiyatlar",
+                    dashboard: "Boshqaruv paneli",
+                    contact: "Aloqa",
+                    financialAnalysis: "AI Moliyaviy Tahlil",
+                    financialAnalysisDesc: "Biznes/moliyaviy hisobotlarni yuklang va batafsil AI asosidagi buxgalteriya tahlili va auditini oling",
+                    businessTrips: "Biznes Safari Hisobotlari",
+                    businessTripsDesc: "Formani yuklab oling, xarajatlar bilan to'ldiring, IT Park tizimiga qaytaring",
+                    choosePlan: "Rejangizni Tanlang",
+                    choosePlanDesc: "Biznesingiz uchun mukammal rejani tanlang",
+                    smallBusiness: "Kichik Biznes",
+                    mediumBusiness: "O'rta Biznes",
+                    largeBusiness: "Yirik Biznes",
+                    startNow: "Boshlash",
+                    tryDashboard: "Dashboardni sinab ko'ring",
+                    startFreeTrial: "Bepul sinovni boshlang",
+                    watchDemo: "Demoni ko'ring",
+                    powerfulFeatures: "Kuchli Xususiyatlar",
+                    featuresDesc: "Muammosiz muvofiqlik boshqaruvi uchun kerak bo'lgan hamma narsa"
+                },
+                ru: {
+                    title: "ComplyAI",
+                    subtitle: "ИИ-система управления соответствием для резидентов IT-парка",
+                    features: "Возможности",
+                    dashboard: "Панель управления",
+                    contact: "Контакты",
+                    financialAnalysis: "ИИ Финансовый Анализ",
+                    financialAnalysisDesc: "Загружайте бизнес/финансовые отчеты и получайте детальный бухгалтерский анализ и аудит на основе ИИ",
+                    businessTrips: "Отчеты о Командировках",
+                    businessTripsDesc: "Скачайте форму, заполните расходами, загрузите обратно в систему IT-парка",
+                    choosePlan: "Выберите План",
+                    choosePlanDesc: "Выберите идеальный план для вашего бизнеса",
+                    smallBusiness: "Малый Бизнес",
+                    mediumBusiness: "Средний Бизнес",
+                    largeBusiness: "Крупный Бизнес",
+                    startNow: "Начать",
+                    tryDashboard: "Попробовать панель",
+                    startFreeTrial: "Начать бесплатный период",
+                    watchDemo: "Смотреть демо",
+                    powerfulFeatures: "Мощные Возможности",
+                    featuresDesc: "Все необходимое для беспроблемного управления соответствием"
+                }
+            };
+
+            const t = translations[currentLanguage];
 
             // Notification system
             const addNotification = (type, message) => {
@@ -103,13 +176,16 @@
             };
 
             const generateAIAnalysis = (document) => {
-                const analysisTypes = ['Financial Audit', 'Compliance Check', 'Risk Assessment', 'Tax Review'];
-                const findings = [
-                    { type: 'success', message: 'Revenue recognition follows accounting standards', severity: 'low' },
-                    { type: 'warning', message: 'Unusual expense pattern in travel category', severity: 'medium' },
-                    { type: 'error', message: 'Potential duplicate transactions detected', severity: 'high' },
-                    { type: 'success', message: 'Cash flow management is optimal', severity: 'low' },
-                    { type: 'warning', message: 'Budget variance exceeds 10% threshold', severity: 'medium' }
+                const analysisTypes = ['Financial Audit', 'Compliance Audit', 'Risk Assessment', 'Tax Audit', 'Internal Audit'];
+                const auditFindings = [
+                    { type: 'success', message: 'Revenue recognition follows IFRS accounting standards', severity: 'low', auditArea: 'Revenue Audit' },
+                    { type: 'warning', message: 'Unusual expense pattern in travel category requires review', severity: 'medium', auditArea: 'Expense Audit' },
+                    { type: 'error', message: 'Potential duplicate transactions detected in accounts payable', severity: 'high', auditArea: 'Transaction Audit' },
+                    { type: 'success', message: 'Cash flow management is optimal and well-documented', severity: 'low', auditArea: 'Cash Flow Audit' },
+                    { type: 'warning', message: 'Budget variance exceeds 10% threshold in Q3', severity: 'medium', auditArea: 'Budget Audit' },
+                    { type: 'success', message: 'Internal controls are functioning effectively', severity: 'low', auditArea: 'Control Audit' },
+                    { type: 'error', message: 'Missing supporting documentation for large transactions', severity: 'high', auditArea: 'Documentation Audit' },
+                    { type: 'warning', message: 'Inventory valuation methods need standardization', severity: 'medium', auditArea: 'Asset Audit' }
                 ];
 
                 const newAnalysis = {
@@ -117,17 +193,28 @@
                     documentName: document.name,
                     analysisType: analysisTypes[Math.floor(Math.random() * analysisTypes.length)],
                     score: Math.floor(Math.random() * 20) + 80,
-                    findings: findings.slice(0, Math.floor(Math.random() * 3) + 2),
+                    findings: auditFindings.slice(0, Math.floor(Math.random() * 4) + 3),
                     recommendations: [
-                        'Implement automated expense tracking system for better accuracy',
+                        'Implement automated expense tracking system for better audit trail',
                         'Review quarterly budget allocations to optimize cash flow',
                         'Enhance invoice approval workflow to reduce processing time',
-                        'Update financial reporting templates for IT Park compliance'
-                    ].slice(0, Math.floor(Math.random() * 2) + 2),
+                        'Update financial reporting templates for IT Park compliance',
+                        'Strengthen internal controls for transaction processing',
+                        'Implement regular audit procedures for expense validation',
+                        'Establish proper documentation standards for all transactions'
+                    ].slice(0, Math.floor(Math.random() * 3) + 3),
+                    auditAreas: [
+                        { area: 'Revenue Recognition', status: 'Compliant', issues: 0 },
+                        { area: 'Expense Management', status: 'Minor Issues', issues: 2 },
+                        { area: 'Cash Flow Controls', status: 'Compliant', issues: 0 },
+                        { area: 'Documentation', status: 'Needs Improvement', issues: 3 },
+                        { area: 'Internal Controls', status: 'Satisfactory', issues: 1 }
+                    ],
                     complianceIssues: [
                         'Financial reporting: Fully compliant with IT Park standards',
                         'Tax documentation: Minor formatting issues identified',
-                        'E-signature compliance: Requires E-Imzo integration'
+                        'E-signature compliance: Requires E-Imzo integration',
+                        'Audit trail: Documentation gaps in expense approvals'
                     ],
                     financialMetrics: {
                         revenueGrowth: (Math.random() * 20 - 5).toFixed(1),
@@ -135,6 +222,7 @@
                         profitMargin: (Math.random() * 40 + 10).toFixed(1),
                         cashFlow: Math.random() > 0.3 ? 'Positive' : 'Negative'
                     },
+                    auditScore: Math.floor(Math.random() * 15) + 85,
                     riskLevel: Math.random() > 0.7 ? 'Low' : Math.random() > 0.4 ? 'Medium' : 'High',
                     processingTime: `${Math.floor(Math.random() * 5) + 1}.${Math.floor(Math.random() * 9)}s`,
                     lastUpdated: new Date().toISOString().split('T')[0]
@@ -160,6 +248,55 @@
             const viewFullAnalysis = (analysis) => {
                 setSelectedAnalysis(analysis);
                 setCurrentView('fullAnalysis');
+            };
+
+            // Business Trip Functions
+            const downloadOfficialForm = () => {
+                // Create a sample business trip form for demo
+                const formContent = `
+IT PARK BUSINESS TRIP EXPENSE REPORT FORM
+
+Employee Information:
+- Name: ________________________
+- Department: ___________________
+- Employee ID: __________________
+
+Trip Details:
+- Destination: ___________________
+- Purpose: ______________________
+- Start Date: ___________________
+- End Date: _____________________
+
+Expenses:
+1. Transportation: _______________
+2. Accommodation: _______________
+3. Meals: _______________________
+4. Other: _______________________
+
+Total Amount: ___________________
+
+Employee Signature: _____________
+Date: __________________________
+
+Manager Approval: _______________
+Date: __________________________
+
+Note: Please fill all required fields and attach receipts.
+Submit to IT Park compliance department within 7 days.
+                `;
+
+                const blob = new Blob([formContent], { type: 'text/plain' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'IT_Park_Business_Trip_Form.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+
+                addNotification('success', 'Official IT Park business trip form downloaded successfully');
             };
 
             // Notification Component
@@ -211,38 +348,51 @@
                                     ComplyAI
                                 </div>
                             </div>
-                            <div className="flex space-x-6">
-                                <a href="#features" className="hover:text-emerald-400 transition-colors">Features</a>
-                                <button onClick={() => setCurrentView('dashboard')} className="hover:text-emerald-400 transition-colors">Dashboard</button>
-                                <a href="#contact" className="hover:text-emerald-400 transition-colors">Contact</a>
+                            <div className="flex space-x-6 items-center">
+                                <a href="#features" className="hover:text-emerald-400 transition-colors">{t.features}</a>
+                                <button onClick={() => setCurrentView('dashboard')} className="hover:text-emerald-400 transition-colors">{t.dashboard}</button>
+                                <a href="#contact" className="hover:text-emerald-400 transition-colors">{t.contact}</a>
+
+                                {/* Language Selector */}
+                                <div className="relative">
+                                    <select
+                                        value={currentLanguage}
+                                        onChange={(e) => setCurrentLanguage(e.target.value)}
+                                        className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-1 text-white text-sm focus:outline-none focus:border-emerald-500"
+                                    >
+                                        <option value="eng">🇺🇸 EN</option>
+                                        <option value="uz">🇺🇿 UZ</option>
+                                        <option value="ru">🇷🇺 RU</option>
+                                    </select>
+                                </div>
                             </div>
                         </nav>
                     </header>
 
                     <section className="container mx-auto px-6 py-20 text-center">
                         <h1 className="text-6xl font-bold mb-6">
-                            <span className="text-emerald-400">ComplyAI</span>
+                            <span className="text-emerald-400">{t.title}</span>
                         </h1>
                         <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
-                            AI-powered compliance management system for IT Park resident companies
+                            {t.subtitle}
                         </p>
                         <div className="flex gap-4 justify-center">
                             <button
                                 onClick={() => setCurrentView('dashboard')}
                                 className="bg-emerald-500 hover:bg-emerald-600 px-8 py-4 rounded-lg text-lg font-semibold transition-colors"
                             >
-                                Start Free Trial
+                                {t.startFreeTrial}
                             </button>
                             <button className="border border-emerald-500 hover:bg-emerald-500 px-8 py-4 rounded-lg text-lg font-semibold transition-colors">
-                                Watch Demo
+                                {t.watchDemo}
                             </button>
                         </div>
                     </section>
 
                     <section id="features" className="container mx-auto px-6 py-20">
                         <div className="text-center mb-16">
-                            <h2 className="text-4xl font-bold mb-4">Powerful Features</h2>
-                            <p className="text-xl text-gray-300">Everything you need for seamless compliance management</p>
+                            <h2 className="text-4xl font-bold mb-4">{t.powerfulFeatures}</h2>
+                            <p className="text-xl text-gray-300">{t.featuresDesc}</p>
                         </div>
 
                         <div className="grid lg:grid-cols-2 gap-12 max-w-4xl mx-auto">
@@ -251,22 +401,25 @@
                                 className="bg-slate-800/50 p-12 rounded-xl border border-slate-700 hover:border-emerald-500 transition-all duration-300 cursor-pointer transform hover:scale-105"
                             >
                                 <div className="text-6xl mb-6 text-center">📊</div>
-                                <h3 className="text-2xl font-semibold mb-4 text-emerald-400 text-center">AI Financial Analysis</h3>
-                                <p className="text-gray-300 mb-6 text-center">Upload your business or financial reports and get detailed AI-powered accounting analysis and auditing</p>
+                                <h3 className="text-2xl font-semibold mb-4 text-emerald-400 text-center">{t.financialAnalysis}</h3>
+                                <p className="text-gray-300 mb-6 text-center">{t.financialAnalysisDesc}</p>
                                 <div className="text-center">
                                     <button className="bg-emerald-500 hover:bg-emerald-600 px-8 py-3 rounded-lg font-semibold">
-                                        Start Now →
+                                        {t.startNow} →
                                     </button>
                                 </div>
                             </div>
 
-                            <div className="bg-slate-800/50 p-12 rounded-xl border border-slate-700 hover:border-blue-500 transition-all duration-300">
+                            <div
+                                onClick={() => setCurrentView('trips')}
+                                className="bg-slate-800/50 p-12 rounded-xl border border-slate-700 hover:border-blue-500 transition-all duration-300 cursor-pointer transform hover:scale-105"
+                            >
                                 <div className="text-6xl mb-6 text-center">✈️</div>
-                                <h3 className="text-2xl font-semibold mb-4 text-blue-400 text-center">Business Trip Reports</h3>
-                                <p className="text-gray-300 mb-6 text-center">Simple 3-step process: Download form, fill with expenses, upload back to IT Park</p>
+                                <h3 className="text-2xl font-semibold mb-4 text-blue-400 text-center">{t.businessTrips}</h3>
+                                <p className="text-gray-300 mb-6 text-center">{t.businessTripsDesc}</p>
                                 <div className="text-center">
                                     <button className="bg-blue-500 hover:bg-blue-600 px-8 py-3 rounded-lg font-semibold">
-                                        Start Now →
+                                        {t.startNow} →
                                     </button>
                                 </div>
                             </div>
@@ -275,18 +428,18 @@
 
                     <section className="container mx-auto px-6 py-20">
                         <div className="text-center mb-16">
-                            <h2 className="text-4xl font-bold mb-4">💎 Choose Your Plan</h2>
-                            <p className="text-xl text-gray-300">Select the perfect plan for your business needs</p>
+                            <h2 className="text-4xl font-bold mb-4">💎 {t.choosePlan}</h2>
+                            <p className="text-xl text-gray-300">{t.choosePlanDesc}</p>
                         </div>
 
                         <div className="grid md:grid-cols-3 gap-8">
                             <div className="p-8 rounded-xl border bg-slate-800/30 border-slate-700 text-center">
-                                <h4 className="text-xl font-semibold mb-4 text-blue-400">Starter Plan</h4>
-                                <div className="text-4xl font-bold mb-4">$50<span className="text-lg text-gray-400">/month</span></div>
+                                <h4 className="text-xl font-semibold mb-4 text-blue-400">{t.smallBusiness}</h4>
+                                <div className="text-4xl font-bold mb-4">$19<span className="text-lg text-gray-400">/month</span></div>
                                 <ul className="text-left space-y-2 text-gray-300 mb-6">
                                     <li>✅ Basic AI Analysis</li>
                                     <li>✅ Trip Report Processing</li>
-                                    <li>✅ Up to 100 documents/month</li>
+                                    <li>✅ Up to 50 documents/month</li>
                                     <li>✅ Email Support</li>
                                 </ul>
                                 <button className="w-full py-3 px-6 rounded-lg font-semibold bg-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white transition-colors">
@@ -298,8 +451,8 @@
                                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-emerald-500 text-white px-4 py-1 rounded-full text-sm">
                                     Most Popular
                                 </div>
-                                <h4 className="text-xl font-semibold mb-4 text-emerald-400">Professional Plan</h4>
-                                <div className="text-4xl font-bold mb-4">$150<span className="text-lg text-gray-400">/month</span></div>
+                                <h4 className="text-xl font-semibold mb-4 text-emerald-400">{t.mediumBusiness}</h4>
+                                <div className="text-4xl font-bold mb-4">$49<span className="text-lg text-gray-400">/month</span></div>
                                 <ul className="text-left space-y-2 text-gray-300 mb-6">
                                     <li>✅ Advanced AI Analysis</li>
                                     <li>✅ Unlimited Documents</li>
@@ -312,8 +465,8 @@
                             </div>
 
                             <div className="p-8 rounded-xl border bg-slate-800/30 border-slate-700 text-center">
-                                <h4 className="text-xl font-semibold mb-4 text-purple-400">Enterprise Plan</h4>
-                                <div className="text-4xl font-bold mb-4">$500<span className="text-lg text-gray-400">/month</span></div>
+                                <h4 className="text-xl font-semibold mb-4 text-purple-400">{t.largeBusiness}</h4>
+                                <div className="text-4xl font-bold mb-4">$99<span className="text-lg text-gray-400">/month</span></div>
                                 <ul className="text-left space-y-2 text-gray-300 mb-6">
                                     <li>✅ Enterprise AI Features</li>
                                     <li>✅ Full API Access</li>
@@ -774,6 +927,126 @@
                                 >
                                     Download Report
                                 </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Business Trip Reports Page
+        if (currentView === 'trips') {
+            return (
+                <div className="min-h-screen gradient-bg text-white">
+                    <NotificationSystem />
+
+                    <header className="container mx-auto px-6 py-4 border-b border-slate-700">
+                        <nav className="flex justify-between items-center">
+                            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentView('landing')}>
+                                <svg width="32" height="32" viewBox="0 0 100 100" className="flex-shrink-0">
+                                    <defs>
+                                        <linearGradient id="logoGradient5" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stopColor="#10b981" />
+                                            <stop offset="100%" stopColor="#059669" />
+                                        </linearGradient>
+                                    </defs>
+                                    <path d="M20 15 C30 10, 45 12, 55 20 C65 28, 75 40, 80 55 C82 62, 80 68, 75 72 C70 76, 62 78, 55 78 L50 78 C42 78, 35 76, 30 72 L25 68 C18 62, 15 55, 14 48 C13 41, 15 34, 20 28 Z" fill="url(#logoGradient5)" />
+                                    <path d="M25 48 L35 58 L65 28" stroke="white" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                                    <circle cx="75" cy="25" r="2" fill="#10b981" opacity="0.7" />
+                                    <circle cx="80" cy="75" r="1.5" fill="#10b981" opacity="0.5" />
+                                </svg>
+                                <div className="text-xl font-bold text-emerald-400">ComplyAI</div>
+                            </div>
+                            <button onClick={() => setCurrentView('landing')} className="px-4 py-2 rounded hover:bg-slate-700">← Back to Home</button>
+                        </nav>
+                    </header>
+
+                    <div className="container mx-auto px-6 py-8">
+                        <h1 className="text-4xl font-bold mb-8 text-center">✈️ {t.businessTrips}</h1>
+
+                        <div className="text-center mb-12">
+                            <p className="text-xl text-gray-300 mb-8">Simple 3-step process for IT Park business trip reporting</p>
+                        </div>
+
+                        {/* Clean 3-Step Workflow */}
+                        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-12">
+                            {/* Step 1: Download Form */}
+                            <div className="bg-slate-800/50 p-8 rounded-xl border border-slate-700 text-center">
+                                <div className="text-5xl mb-6">📄</div>
+                                <h3 className="text-2xl font-semibold mb-4 text-emerald-400">1. Download Form</h3>
+                                <p className="text-gray-300 mb-6">Get the official IT Park business trip form template provided by our company</p>
+                                <button
+                                    onClick={downloadOfficialForm}
+                                    className="bg-emerald-500 hover:bg-emerald-600 px-6 py-3 rounded-lg font-semibold w-full"
+                                >
+                                    📄 Download Official Form
+                                </button>
+                            </div>
+
+                            {/* Step 2: Fill Form */}
+                            <div className="bg-slate-800/50 p-8 rounded-xl border border-slate-700 text-center">
+                                <div className="text-5xl mb-6">✏️</div>
+                                <h3 className="text-2xl font-semibold mb-4 text-blue-400">2. Fill Form</h3>
+                                <p className="text-gray-300 mb-6">Complete the form with your trip expenses and details according to money you spend</p>
+                                <div className="bg-blue-500/20 px-4 py-3 rounded-lg text-blue-400 font-medium">
+                                    Fill offline with your trip details and expenses
+                                </div>
+                            </div>
+
+                            {/* Step 3: Upload Form */}
+                            <div className="bg-slate-800/50 p-8 rounded-xl border border-slate-700 text-center">
+                                <div className="text-5xl mb-6">📤</div>
+                                <h3 className="text-2xl font-semibold mb-4 text-purple-400">3. Upload Form</h3>
+                                <p className="text-gray-300 mb-6">Submit your completed form back to IT Park system for processing</p>
+                                <input
+                                    type="file"
+                                    id="tripFormUpload"
+                                    multiple
+                                    accept=".pdf,.doc,.docx,.xlsx,.xls,.txt"
+                                    onChange={(e) => {
+                                        const files = Array.from(e.target.files);
+                                        files.forEach(file => {
+                                            addNotification('success', `Trip report "${file.name}" uploaded successfully and sent to IT Park compliance department`);
+                                        });
+                                    }}
+                                    className="hidden"
+                                />
+                                <label
+                                    htmlFor="tripFormUpload"
+                                    className="bg-purple-500 hover:bg-purple-600 px-6 py-3 rounded-lg font-semibold cursor-pointer w-full inline-block"
+                                >
+                                    📤 Upload Completed Form
+                                </label>
+                            </div>
+                        </div>
+
+                        {/* Supported Formats */}
+                        <div className="bg-slate-800/30 p-6 rounded-xl border border-slate-700 max-w-3xl mx-auto text-center mb-8">
+                            <h4 className="text-lg font-semibold mb-4 text-gray-300">📋 Supported File Formats</h4>
+                            <div className="flex justify-center gap-4 text-sm text-gray-400 flex-wrap">
+                                <span className="bg-slate-700 px-3 py-1 rounded">PDF</span>
+                                <span className="bg-slate-700 px-3 py-1 rounded">Excel (.xlsx, .xls)</span>
+                                <span className="bg-slate-700 px-3 py-1 rounded">Word (.doc, .docx)</span>
+                                <span className="bg-slate-700 px-3 py-1 rounded">Text (.txt)</span>
+                            </div>
+                            <p className="text-xs text-gray-500 mt-4">Files are sent directly to IT Park compliance department for review and approval</p>
+                        </div>
+
+                        {/* IT Park Information */}
+                        <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-6 max-w-3xl mx-auto text-center">
+                            <div className="text-3xl mb-4">🏢</div>
+                            <h3 className="text-xl font-semibold mb-2 text-emerald-400">IT Park Internal System</h3>
+                            <p className="text-gray-300 mb-4">
+                                This system works within IT Park and its branches. All submitted forms are automatically
+                                processed by the IT Park compliance department.
+                            </p>
+                            <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-400">
+                                <div className="bg-slate-800/50 p-3 rounded">
+                                    <strong className="text-emerald-400">Processing Time:</strong> 2-3 business days
+                                </div>
+                                <div className="bg-slate-800/50 p-3 rounded">
+                                    <strong className="text-emerald-400">Approval Status:</strong> Email notification sent
+                                </div>
                             </div>
                         </div>
                     </div>
