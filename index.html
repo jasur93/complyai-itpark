@@ -89,6 +89,9 @@
             const [selectedPlan, setSelectedPlan] = useState(null);
             const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
             const [showAuditorPanel, setShowAuditorPanel] = useState(false);
+            const [auditorCriteria, setAuditorCriteria] = useState([]);
+            const [newCriterion, setNewCriterion] = useState({ name: '', description: '', priority: 'medium' });
+            const [showAuditorPanel, setShowAuditorPanel] = useState(false);
             const [auditorCriteria, setAuditorCriteria] = useState({
                 complianceStandards: '',
                 riskThreshold: 'medium',
@@ -376,13 +379,20 @@
                         ));
 
                         setTimeout(() => {
-                            setUploadedDocuments(prev => prev.map(d =>
-                                d.id === doc.id ? { ...d, status: 'Analyzed' } : d
-                            ));
-
-                            // Generate AI analysis
-                            generateAIAnalysis(doc);
-                            addNotification('success', `AI analysis completed for ${doc.name}`);
+                            // Use enhanced analysis if auditor criteria exist
+                            if (auditorCriteria.length > 0) {
+                                setUploadedDocuments(prev => prev.map(d =>
+                                    d.id === doc.id ? { ...d, status: 'Enhanced Analysis Complete' } : d
+                                ));
+                                runAIAnalysisWithCriteria(doc);
+                            } else {
+                                setUploadedDocuments(prev => prev.map(d =>
+                                    d.id === doc.id ? { ...d, status: 'Analyzed' } : d
+                                ));
+                                // Generate standard AI analysis
+                                generateAIAnalysis(doc);
+                                addNotification('success', `AI analysis completed for ${doc.name}`);
+                            }
                         }, 3000);
                     }, 1000 + index * 500);
                 });
@@ -597,6 +607,89 @@ Date: __________________________
 
             const viewRiskAlert = () => {
                 addNotification('warning', 'Risk Alert: Cash flow monitoring recommended for December. Set up automated alerts.');
+            };
+
+            const addAuditorCriterion = () => {
+                if (!newCriterion.name || !newCriterion.description) {
+                    addNotification('error', 'Please fill in both criterion name and description');
+                    return;
+                }
+
+                const criterion = {
+                    id: auditorCriteria.length + 1,
+                    name: newCriterion.name,
+                    description: newCriterion.description,
+                    priority: newCriterion.priority,
+                    dateAdded: new Date().toISOString().split('T')[0],
+                    status: 'active'
+                };
+
+                setAuditorCriteria([...auditorCriteria, criterion]);
+                setNewCriterion({ name: '', description: '', priority: 'medium' });
+                addNotification('success', `Auditor criterion "${criterion.name}" added successfully`);
+            };
+
+            const removeAuditorCriterion = (id) => {
+                setAuditorCriteria(auditorCriteria.filter(c => c.id !== id));
+                addNotification('info', 'Auditor criterion removed');
+            };
+
+            const runAIAnalysisWithCriteria = async (document) => {
+                setIsAnalyzing(true);
+                addNotification('info', 'Running enhanced AI analysis with custom auditor criteria...');
+
+                // Simulate OpenAI API call with custom criteria
+                setTimeout(() => {
+                    const customFindings = auditorCriteria.map(criterion => ({
+                        type: Math.random() > 0.7 ? 'success' : Math.random() > 0.4 ? 'warning' : 'error',
+                        message: `${criterion.name}: ${getRandomAnalysisResult(criterion)}`,
+                        severity: criterion.priority,
+                        criterionId: criterion.id
+                    }));
+
+                    const standardFindings = [
+                        { type: 'success', message: 'Revenue recognition follows accounting standards', severity: 'low' },
+                        { type: 'warning', message: 'Unusual expense pattern detected', severity: 'medium' },
+                        { type: 'error', message: 'Missing documentation for large transactions', severity: 'high' }
+                    ];
+
+                    const enhancedAnalysis = {
+                        id: analysisResults.length + 1,
+                        documentName: document.name,
+                        analysisType: 'Enhanced AI Analysis with Custom Criteria',
+                        score: Math.floor(Math.random() * 20) + 75, // 75-95
+                        findings: [...customFindings, ...standardFindings.slice(0, 2)],
+                        recommendations: [
+                            'Address custom auditor criteria findings',
+                            'Implement automated compliance monitoring',
+                            'Review documentation procedures',
+                            'Set up real-time alerts for criterion violations'
+                        ],
+                        complianceIssues: [
+                            'Custom Auditor Criteria: Under Review',
+                            'Financial reporting: Compliant with enhanced standards',
+                            'Documentation: Requires attention per auditor requirements'
+                        ],
+                        customCriteriaUsed: auditorCriteria.length,
+                        aiProvider: 'OpenAI GPT-4 Enhanced',
+                        processingTime: `${Math.floor(Math.random() * 3) + 2}.${Math.floor(Math.random() * 9)}s`
+                    };
+
+                    setAnalysisResults([enhancedAnalysis, ...analysisResults]);
+                    setIsAnalyzing(false);
+                    addNotification('success', `Enhanced AI analysis completed using ${auditorCriteria.length} custom criteria`);
+                }, 3000);
+            };
+
+            const getRandomAnalysisResult = (criterion) => {
+                const results = [
+                    'Compliant with specified requirements',
+                    'Minor deviations detected, review recommended',
+                    'Significant issues found, immediate attention required',
+                    'Excellent compliance, exceeds expectations',
+                    'Partial compliance, additional documentation needed'
+                ];
+                return results[Math.floor(Math.random() * results.length)];
             };
 
             if (currentView === 'landing') {
@@ -1039,7 +1132,7 @@ Date: __________________________
                         <div className="text-center mb-8">
                             <h1 className="text-4xl font-bold mb-4">📊 AI Financial Analysis</h1>
                             <p className="text-xl text-gray-300 mb-8">Upload your business or financial reports to get detailed AI-powered accounting analysis</p>
-                            <div className="flex justify-center gap-4">
+                            <div className="flex flex-col sm:flex-row justify-center gap-4">
                                 <input
                                     type="file"
                                     id="fileUpload"
@@ -1050,20 +1143,114 @@ Date: __________________________
                                 />
                                 <label
                                     htmlFor="fileUpload"
-                                    className="bg-emerald-500 hover:bg-emerald-600 px-8 py-4 rounded-lg cursor-pointer flex items-center gap-3 text-lg font-semibold glow-effect"
+                                    className="bg-emerald-500 hover:bg-emerald-600 px-6 md:px-8 py-3 md:py-4 rounded-lg cursor-pointer flex items-center gap-3 text-base md:text-lg font-semibold glow-effect justify-center"
                                 >
                                     📁 Upload Financial Documents
                                 </label>
+                                <button
+                                    onClick={() => setShowAuditorPanel(!showAuditorPanel)}
+                                    className="bg-blue-500 hover:bg-blue-600 px-6 md:px-8 py-3 md:py-4 rounded-lg transition-colors flex items-center gap-2 font-semibold justify-center"
+                                >
+                                    👨‍💼 Auditor Panel
+                                </button>
                                 {(uploadedDocuments.length > 0 || analysisResults.length > 0) && (
                                     <button
                                         onClick={clearPreviousFiles}
-                                        className="bg-red-500 hover:bg-red-600 px-6 py-4 rounded-lg transition-colors flex items-center gap-2 font-semibold"
+                                        className="bg-red-500 hover:bg-red-600 px-6 py-3 md:py-4 rounded-lg transition-colors flex items-center gap-2 font-semibold justify-center"
                                     >
                                         🗑️ Clear All Files
                                     </button>
                                 )}
                             </div>
                         </div>
+
+                        {/* Auditor Panel */}
+                        {showAuditorPanel && (
+                            <div className="mb-8 bg-slate-800/50 p-6 rounded-xl border border-blue-500/30">
+                                <h3 className="text-2xl font-semibold mb-6 text-blue-400 flex items-center gap-2">
+                                    👨‍💼 Auditor Custom Criteria Panel
+                                    <span className="text-sm bg-blue-500/20 px-2 py-1 rounded">OpenAI Enhanced</span>
+                                </h3>
+
+                                {/* Add New Criterion */}
+                                <div className="bg-slate-700/30 p-4 rounded-lg mb-6">
+                                    <h4 className="font-semibold mb-4">Add Custom Analysis Criterion</h4>
+                                    <div className="grid md:grid-cols-3 gap-4 mb-4">
+                                        <input
+                                            type="text"
+                                            placeholder="Criterion Name (e.g., Revenue Recognition)"
+                                            value={newCriterion.name}
+                                            onChange={(e) => setNewCriterion({...newCriterion, name: e.target.value})}
+                                            className="bg-slate-600 border border-slate-500 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                                        />
+                                        <select
+                                            value={newCriterion.priority}
+                                            onChange={(e) => setNewCriterion({...newCriterion, priority: e.target.value})}
+                                            className="bg-slate-600 border border-slate-500 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                                        >
+                                            <option value="low">Low Priority</option>
+                                            <option value="medium">Medium Priority</option>
+                                            <option value="high">High Priority</option>
+                                            <option value="critical">Critical</option>
+                                        </select>
+                                        <button
+                                            onClick={addAuditorCriterion}
+                                            className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg font-semibold transition-colors"
+                                        >
+                                            Add Criterion
+                                        </button>
+                                    </div>
+                                    <textarea
+                                        placeholder="Detailed description of what to analyze (e.g., Check if revenue recognition follows IFRS standards and identify any premature revenue booking)"
+                                        value={newCriterion.description}
+                                        onChange={(e) => setNewCriterion({...newCriterion, description: e.target.value})}
+                                        className="w-full bg-slate-600 border border-slate-500 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 h-20 resize-none"
+                                    />
+                                </div>
+
+                                {/* Current Criteria */}
+                                {auditorCriteria.length > 0 && (
+                                    <div>
+                                        <h4 className="font-semibold mb-4">Active Auditor Criteria ({auditorCriteria.length})</h4>
+                                        <div className="space-y-3 max-h-60 overflow-y-auto">
+                                            {auditorCriteria.map(criterion => (
+                                                <div key={criterion.id} className="bg-slate-700/50 p-4 rounded-lg border border-slate-600">
+                                                    <div className="flex justify-between items-start mb-2">
+                                                        <h5 className="font-semibold text-blue-400">{criterion.name}</h5>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className={`px-2 py-1 rounded text-xs ${
+                                                                criterion.priority === 'critical' ? 'bg-red-500/20 text-red-400' :
+                                                                criterion.priority === 'high' ? 'bg-orange-500/20 text-orange-400' :
+                                                                criterion.priority === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
+                                                                'bg-green-500/20 text-green-400'
+                                                            }`}>
+                                                                {criterion.priority}
+                                                            </span>
+                                                            <button
+                                                                onClick={() => removeAuditorCriterion(criterion.id)}
+                                                                className="text-red-400 hover:text-red-300 text-sm"
+                                                            >
+                                                                ✕
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <p className="text-sm text-gray-400">{criterion.description}</p>
+                                                    <p className="text-xs text-gray-500 mt-2">Added: {criterion.dateAdded}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {auditorCriteria.length === 0 && (
+                                    <div className="text-center py-8 text-gray-400">
+                                        <div className="text-4xl mb-4">👨‍💼</div>
+                                        <p>No custom criteria added yet</p>
+                                        <p className="text-sm">Add criteria above to enhance AI analysis</p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                         <div className="grid lg:grid-cols-2 gap-8">
                             {/* Uploaded Documents */}
@@ -1082,18 +1269,28 @@ Date: __________________________
                                                     {doc.status}
                                                 </div>
                                             </div>
-                                            {doc.status === 'Analyzed' && (
-                                                <button
-                                                    onClick={() => {
-                                                        const analysis = analysisResults.find(a => a.documentName === doc.name);
-                                                        if (analysis) {
-                                                            viewAnalysis(analysis);
-                                                        }
-                                                    }}
-                                                    className="bg-emerald-500 hover:bg-emerald-600 px-4 py-2 rounded text-sm"
-                                                >
-                                                    View Analysis
-                                                </button>
+                                            {(doc.status === 'Analyzed' || doc.status === 'Enhanced Analysis Complete') && (
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={() => {
+                                                            const analysis = analysisResults.find(a => a.documentName === doc.name);
+                                                            if (analysis) {
+                                                                viewAnalysis(analysis);
+                                                            }
+                                                        }}
+                                                        className="bg-emerald-500 hover:bg-emerald-600 px-3 py-1 rounded text-xs"
+                                                    >
+                                                        View Analysis
+                                                    </button>
+                                                    {auditorCriteria.length > 0 && doc.status !== 'Enhanced Analysis Complete' && (
+                                                        <button
+                                                            onClick={() => runAIAnalysisWithCriteria(doc)}
+                                                            className="bg-purple-500 hover:bg-purple-600 px-3 py-1 rounded text-xs"
+                                                        >
+                                                            Re-analyze with Criteria
+                                                        </button>
+                                                    )}
+                                                </div>
                                             )}
                                         </div>
                                     ))}
