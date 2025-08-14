@@ -22,6 +22,31 @@
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 70%, #064e3b 100%);
         }
 
+        /* Mobile-first responsive design */
+        @media (max-width: 768px) {
+            .mobile-padding { padding: 1rem; }
+            .mobile-text-sm { font-size: 0.875rem; }
+            .mobile-text-base { font-size: 1rem; }
+            .mobile-text-lg { font-size: 1.125rem; }
+            .mobile-text-xl { font-size: 1.25rem; }
+            .mobile-text-2xl { font-size: 1.5rem; }
+            .mobile-text-3xl { font-size: 1.875rem; }
+            .mobile-text-4xl { font-size: 2.25rem; }
+            .mobile-hidden { display: none; }
+            .mobile-block { display: block; }
+            .mobile-flex { display: flex; }
+            .mobile-grid { display: grid; }
+            .mobile-grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+            .mobile-grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .mobile-gap-2 { gap: 0.5rem; }
+            .mobile-gap-4 { gap: 1rem; }
+            .mobile-mb-4 { margin-bottom: 1rem; }
+            .mobile-mb-6 { margin-bottom: 1.5rem; }
+            .mobile-p-4 { padding: 1rem; }
+            .mobile-px-4 { padding-left: 1rem; padding-right: 1rem; }
+            .mobile-py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        }
+
         .glow-effect {
             box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
         }
@@ -62,6 +87,7 @@
             const [selectedAnalysis, setSelectedAnalysis] = useState(null);
             const [showTripForm, setShowTripForm] = useState(false);
             const [selectedPlan, setSelectedPlan] = useState(null);
+            const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
             const [tripForm, setTripForm] = useState({
                 destination: '',
                 purpose: '',
@@ -388,15 +414,30 @@
                     score: Math.floor(Math.random() * 20) + 80, // 80-100
                     findings: findings.slice(0, Math.floor(Math.random() * 3) + 2),
                     recommendations: [
-                        'Implement digital receipt management system',
-                        'Set up automated transaction categorization',
-                        'Regular reconciliation of accounts'
-                    ],
+                        'Implement automated expense tracking system for better accuracy',
+                        'Review quarterly budget allocations to optimize cash flow',
+                        'Enhance invoice approval workflow to reduce processing time',
+                        'Update financial reporting templates for IT Park compliance',
+                        'Consider implementing AI-powered fraud detection',
+                        'Establish monthly financial review meetings'
+                    ].slice(0, Math.floor(Math.random() * 3) + 3),
                     complianceIssues: [
-                        'IT Park reporting requirements: Compliant',
-                        'Tax documentation: Minor issues identified',
-                        'E-signature compliance: Needs attention'
-                    ]
+                        'Financial reporting: Fully compliant with IT Park standards',
+                        'Tax documentation: Minor formatting issues identified',
+                        'E-signature compliance: Requires E-Imzo integration',
+                        'Audit trail: Complete and accessible',
+                        'Data security: Meets regulatory requirements',
+                        'Backup procedures: Implemented and tested'
+                    ],
+                    financialMetrics: {
+                        revenueGrowth: (Math.random() * 20 - 5).toFixed(1), // -5% to +15%
+                        expenseRatio: (Math.random() * 30 + 50).toFixed(1), // 50% to 80%
+                        profitMargin: (Math.random() * 40 + 10).toFixed(1), // 10% to 50%
+                        cashFlow: Math.random() > 0.3 ? 'Positive' : 'Negative'
+                    },
+                    riskLevel: Math.random() > 0.7 ? 'Low' : Math.random() > 0.4 ? 'Medium' : 'High',
+                    processingTime: `${Math.floor(Math.random() * 5) + 1}.${Math.floor(Math.random() * 9)}s`,
+                    lastUpdated: new Date().toISOString().split('T')[0]
                 };
 
                 setAnalysisResults([newAnalysis, ...analysisResults]);
@@ -534,10 +575,10 @@ Date: __________________________
                 return (
                     <div className="min-h-screen gradient-bg text-white">
                         {/* Header */}
-                        <header className="container mx-auto px-6 py-8">
+                        <header className="container mx-auto px-4 md:px-6 py-4 md:py-8">
                             <nav className="flex justify-between items-center">
-                                <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentView('landing')}>
-                                    <svg width="60" height="60" viewBox="0 0 400 400" className="flex-shrink-0">
+                                <div className="flex items-center gap-2 md:gap-3 cursor-pointer" onClick={() => setCurrentView('landing')}>
+                                    <svg width="40" height="40" viewBox="0 0 400 400" className="md:w-[60px] md:h-[60px] flex-shrink-0">
                                         <defs>
                                             <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                                                 <stop offset="0%" stopColor="#10b981" />
@@ -557,11 +598,13 @@ Date: __________________________
                                         {/* Additional curved element */}
                                         <path d="M100 150 C120 140, 140 145, 155 160" stroke="#10b981" strokeWidth="8" fill="none" strokeLinecap="round" opacity="0.6" />
                                     </svg>
-                                    <div className="text-2xl font-bold text-emerald-400">
+                                    <div className="text-lg md:text-2xl font-bold text-emerald-400">
                                         ComplyAI
                                     </div>
                                 </div>
-                                <div className="hidden md:flex space-x-8 items-center">
+
+                                {/* Desktop Navigation */}
+                                <div className="hidden lg:flex space-x-8 items-center">
                                     <a href="#features" className="hover:text-emerald-400 transition-colors">{t.features}</a>
                                     <button onClick={() => setCurrentView('dashboard')} className="hover:text-emerald-400 transition-colors">{t.dashboard}</button>
                                     <a href="#contact" className="hover:text-emerald-400 transition-colors">{t.contact}</a>
@@ -579,19 +622,58 @@ Date: __________________________
                                         </select>
                                     </div>
                                 </div>
-                                <button
-                                    onClick={() => setCurrentView('dashboard')}
-                                    className="bg-emerald-500 hover:bg-emerald-600 px-6 py-2 rounded-lg transition-colors glow-effect"
-                                >
-                                    {t.tryDashboard}
-                                </button>
+
+                                {/* Mobile & Desktop CTA */}
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={() => setCurrentView('dashboard')}
+                                        className="bg-emerald-500 hover:bg-emerald-600 px-3 md:px-6 py-2 rounded-lg transition-colors glow-effect text-sm md:text-base"
+                                    >
+                                        <span className="hidden md:inline">{t.tryDashboard}</span>
+                                        <span className="md:hidden">Demo</span>
+                                    </button>
+
+                                    {/* Mobile Menu Button */}
+                                    <button
+                                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                                        className="lg:hidden p-2 rounded-lg hover:bg-slate-700"
+                                    >
+                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                                        </svg>
+                                    </button>
+                                </div>
                             </nav>
+
+                            {/* Mobile Menu */}
+                            {mobileMenuOpen && (
+                                <div className="lg:hidden mt-4 pb-4 border-t border-slate-700">
+                                    <div className="flex flex-col space-y-4 pt-4">
+                                        <a href="#features" className="hover:text-emerald-400 transition-colors">{t.features}</a>
+                                        <button onClick={() => setCurrentView('dashboard')} className="hover:text-emerald-400 transition-colors text-left">{t.dashboard}</button>
+                                        <a href="#contact" className="hover:text-emerald-400 transition-colors">{t.contact}</a>
+
+                                        {/* Mobile Language Selector */}
+                                        <div className="pt-2">
+                                            <select
+                                                value={currentLanguage}
+                                                onChange={(e) => setCurrentLanguage(e.target.value)}
+                                                className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-emerald-500 w-full"
+                                            >
+                                                <option value="eng">🇺🇸 English</option>
+                                                <option value="uz">🇺🇿 O'zbek</option>
+                                                <option value="ru">🇷🇺 Русский</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </header>
 
                     {/* Hero Section */}
-                    <section className="container mx-auto px-6 py-20 text-center">
+                    <section className="container mx-auto px-4 md:px-6 py-12 md:py-20 text-center">
                         <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-                            <h1 className="text-5xl md:text-7xl font-bold mb-6">
+                            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-4 md:mb-6">
                                 {currentLanguage === 'eng' && (
                                     <>
                                         AI-Powered
@@ -620,19 +702,19 @@ Date: __________________________
                                     </>
                                 )}
                             </h1>
-                            <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
+                            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-300 mb-6 md:mb-8 max-w-3xl mx-auto px-4">
                                 {t.subtitle}
                             </p>
-                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center px-4">
                                 <button
                                     onClick={() => setCurrentView('dashboard')}
-                                    className="bg-emerald-500 hover:bg-emerald-600 px-8 py-4 rounded-lg text-lg font-semibold transition-colors glow-effect"
+                                    className="bg-emerald-500 hover:bg-emerald-600 px-6 md:px-8 py-3 md:py-4 rounded-lg text-base md:text-lg font-semibold transition-colors glow-effect"
                                 >
                                     Start Free Trial
                                 </button>
                                 <button
                                     onClick={watchDemo}
-                                    className="border border-emerald-500 hover:bg-emerald-500 px-8 py-4 rounded-lg text-lg font-semibold transition-colors"
+                                    className="border border-emerald-500 hover:bg-emerald-500 px-6 md:px-8 py-3 md:py-4 rounded-lg text-base md:text-lg font-semibold transition-colors"
                                 >
                                     Watch Demo
                                 </button>
@@ -641,25 +723,25 @@ Date: __________________________
                     </section>
 
                     {/* Features Section */}
-                    <section id="features" className="container mx-auto px-6 py-20">
-                        <div className="text-center mb-16">
-                            <h2 className="text-4xl font-bold mb-4">Powerful Features</h2>
-                            <p className="text-xl text-gray-300">Everything you need for seamless compliance management</p>
+                    <section id="features" className="container mx-auto px-4 md:px-6 py-12 md:py-20">
+                        <div className="text-center mb-8 md:mb-16">
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">Powerful Features</h2>
+                            <p className="text-base md:text-xl text-gray-300 px-4">Everything you need for seamless compliance management</p>
                         </div>
 
-                        <div className="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 max-w-4xl mx-auto">
                             {features.map((feature, index) => (
                                 <div
                                     key={index}
                                     onClick={feature.action}
-                                    className="bg-slate-800/50 backdrop-blur-sm p-12 rounded-xl border border-slate-700 hover:border-emerald-500 transition-all duration-300 animate-float cursor-pointer transform hover:scale-105"
+                                    className="bg-slate-800/50 backdrop-blur-sm p-6 md:p-12 rounded-xl border border-slate-700 hover:border-emerald-500 transition-all duration-300 animate-float cursor-pointer transform hover:scale-105"
                                     style={{ animationDelay: `${index * 0.2}s` }}
                                 >
-                                    <div className="text-6xl mb-6 text-center">{feature.icon}</div>
-                                    <h3 className="text-2xl font-semibold mb-4 text-emerald-400 text-center">{feature.title}</h3>
-                                    <p className="text-gray-300 mb-6 text-center leading-relaxed">{feature.description}</p>
+                                    <div className="text-4xl md:text-6xl mb-4 md:mb-6 text-center">{feature.icon}</div>
+                                    <h3 className="text-xl md:text-2xl font-semibold mb-3 md:mb-4 text-emerald-400 text-center">{feature.title}</h3>
+                                    <p className="text-gray-300 mb-4 md:mb-6 text-center leading-relaxed text-sm md:text-base">{feature.description}</p>
                                     <div className="text-center">
-                                        <button className="bg-emerald-500 hover:bg-emerald-600 px-8 py-3 rounded-lg font-semibold transition-colors">
+                                        <button className="bg-emerald-500 hover:bg-emerald-600 px-6 md:px-8 py-2 md:py-3 rounded-lg font-semibold transition-colors text-sm md:text-base">
                                             {t.startNow} →
                                         </button>
                                     </div>
@@ -703,23 +785,23 @@ Date: __________________________
                     </section>
 
                     {/* Choose Your Plan */}
-                    <section className="container mx-auto px-6 py-20 border-t border-slate-700">
-                        <div className="text-center mb-16">
-                            <h2 className="text-4xl font-bold mb-4">💎 {t.choosePlan}</h2>
-                            <p className="text-xl text-gray-300">{t.choosePlanDesc}</p>
+                    <section className="container mx-auto px-4 md:px-6 py-12 md:py-20 border-t border-slate-700">
+                        <div className="text-center mb-8 md:mb-16">
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">💎 {t.choosePlan}</h2>
+                            <p className="text-base md:text-xl text-gray-300 px-4">{t.choosePlanDesc}</p>
                         </div>
 
                         {/* Pricing Tiers */}
-                        <div className="mb-16">
-                            <div className="grid md:grid-cols-3 gap-8">
-                                <div className={`p-8 rounded-xl border text-center transition-all duration-300 ${
+                        <div className="mb-8 md:mb-16">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                                <div className={`p-4 md:p-8 rounded-xl border text-center transition-all duration-300 ${
                                     selectedPlan?.name === 'Small Business'
                                         ? 'bg-blue-500/20 border-blue-500 transform scale-105'
                                         : 'bg-slate-800/30 border-slate-700 hover:border-blue-500'
                                 }`}>
-                                    <h4 className="text-xl font-semibold mb-4 text-blue-400">{t.smallBusiness}</h4>
-                                    <div className="text-4xl font-bold mb-4">$15<span className="text-lg text-gray-400">/month</span></div>
-                                    <ul className="text-left space-y-2 text-gray-300 mb-6">
+                                    <h4 className="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-blue-400">{t.smallBusiness}</h4>
+                                    <div className="text-2xl md:text-4xl font-bold mb-3 md:mb-4">$15<span className="text-sm md:text-lg text-gray-400">/month</span></div>
+                                    <ul className="text-left space-y-1 md:space-y-2 text-gray-300 mb-4 md:mb-6 text-sm md:text-base">
                                         <li>✅ Basic AI Analysis</li>
                                         <li>✅ Trip Report Processing</li>
                                         <li>✅ Up to 50 documents/month</li>
@@ -728,7 +810,7 @@ Date: __________________________
                                     </ul>
                                     <button
                                         onClick={() => selectPlan('Small Business', 15)}
-                                        className={`w-full py-3 px-6 rounded-lg font-semibold transition-colors ${
+                                        className={`w-full py-2 md:py-3 px-4 md:px-6 rounded-lg font-semibold transition-colors text-sm md:text-base ${
                                             selectedPlan?.name === 'Small Business'
                                                 ? 'bg-blue-500 text-white'
                                                 : 'bg-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white'
@@ -841,20 +923,20 @@ Date: __________________________
                         </nav>
                     </header>
 
-                    <div className="container mx-auto px-6 py-8">
-                        <h1 className="text-4xl font-bold mb-8 text-center">Choose Your Service</h1>
+                    <div className="container mx-auto px-4 md:px-6 py-6 md:py-8">
+                        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 md:mb-8 text-center">Choose Your Service</h1>
 
                         {/* Main Services */}
-                        <div className="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 max-w-4xl mx-auto">
                             <div
                                 onClick={() => setCurrentView('analysis')}
-                                className="bg-slate-800/50 p-12 rounded-xl border border-slate-700 hover:border-emerald-500 transition-all duration-300 cursor-pointer transform hover:scale-105"
+                                className="bg-slate-800/50 p-6 md:p-12 rounded-xl border border-slate-700 hover:border-emerald-500 transition-all duration-300 cursor-pointer transform hover:scale-105"
                             >
-                                <div className="text-6xl mb-6 text-center">📊</div>
-                                <h3 className="text-2xl font-semibold mb-4 text-emerald-400 text-center">AI Financial Analysis</h3>
-                                <p className="text-gray-300 mb-6 text-center">Upload your business or financial reports and get detailed AI-powered accounting analysis and auditing</p>
+                                <div className="text-4xl md:text-6xl mb-4 md:mb-6 text-center">📊</div>
+                                <h3 className="text-xl md:text-2xl font-semibold mb-3 md:mb-4 text-emerald-400 text-center">AI Financial Analysis</h3>
+                                <p className="text-gray-300 mb-4 md:mb-6 text-center text-sm md:text-base">Upload your business or financial reports and get detailed AI-powered accounting analysis and auditing</p>
                                 <div className="text-center">
-                                    <button className="bg-emerald-500 hover:bg-emerald-600 px-8 py-3 rounded-lg font-semibold">
+                                    <button className="bg-emerald-500 hover:bg-emerald-600 px-6 md:px-8 py-2 md:py-3 rounded-lg font-semibold text-sm md:text-base">
                                         Upload Documents
                                     </button>
                                 </div>
@@ -1341,9 +1423,31 @@ Date: __________________________
 
                     <div className="container mx-auto px-6 py-8">
                         <div className="mb-8">
-                            <h1 className="text-4xl font-bold mb-2">📊 AI Analysis Report</h1>
-                            <p className="text-gray-400">Document: {selectedAnalysis?.documentName}</p>
-                            <p className="text-gray-400">Analysis Type: {selectedAnalysis?.analysisType}</p>
+                            <h1 className="text-4xl font-bold mb-4">📊 AI Analysis Report</h1>
+                            <div className="bg-gradient-to-r from-emerald-500/10 to-blue-500/10 p-6 rounded-xl border border-emerald-500/30 mb-6">
+                                <div className="grid md:grid-cols-4 gap-4 text-center">
+                                    <div>
+                                        <div className="text-2xl font-bold text-emerald-400">{selectedAnalysis?.score}%</div>
+                                        <div className="text-sm text-gray-400">Compliance Score</div>
+                                    </div>
+                                    <div>
+                                        <div className="text-2xl font-bold text-blue-400">{selectedAnalysis?.analysisType}</div>
+                                        <div className="text-sm text-gray-400">Analysis Type</div>
+                                    </div>
+                                    <div>
+                                        <div className="text-2xl font-bold text-purple-400">{selectedAnalysis?.riskLevel || 'Low'}</div>
+                                        <div className="text-sm text-gray-400">Risk Level</div>
+                                    </div>
+                                    <div>
+                                        <div className="text-2xl font-bold text-yellow-400">{selectedAnalysis?.lastUpdated || new Date().toISOString().split('T')[0]}</div>
+                                        <div className="text-sm text-gray-400">Analysis Date</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="text-center mb-6">
+                                <h2 className="text-xl font-semibold text-gray-300">Document: {selectedAnalysis?.documentName}</h2>
+                                <p className="text-gray-400">Processed in {selectedAnalysis?.processingTime || '2.3s'} using advanced AI algorithms</p>
+                            </div>
                         </div>
 
                         {selectedAnalysis && (
@@ -1452,6 +1556,105 @@ Date: __________________________
                                         <button className="bg-orange-500 hover:bg-orange-600 px-6 py-2 rounded-lg">
                                             Send to Accountant
                                         </button>
+                                    </div>
+                                </div>
+
+                                {/* Financial Metrics */}
+                                <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                                    <h3 className="text-xl font-semibold mb-4">📈 Financial Metrics</h3>
+                                    <div className="space-y-4">
+                                        <div className="flex justify-between items-center p-3 bg-slate-700/30 rounded">
+                                            <span>Revenue Growth</span>
+                                            <span className={`font-semibold ${
+                                                selectedAnalysis.financialMetrics?.revenueGrowth > 0 ? 'text-green-400' : 'text-red-400'
+                                            }`}>
+                                                {selectedAnalysis.financialMetrics?.revenueGrowth > 0 ? '+' : ''}{selectedAnalysis.financialMetrics?.revenueGrowth || '12.5'}%
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between items-center p-3 bg-slate-700/30 rounded">
+                                            <span>Expense Ratio</span>
+                                            <span className={`font-semibold ${
+                                                selectedAnalysis.financialMetrics?.expenseRatio < 70 ? 'text-green-400' : 'text-yellow-400'
+                                            }`}>
+                                                {selectedAnalysis.financialMetrics?.expenseRatio || '68.2'}%
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between items-center p-3 bg-slate-700/30 rounded">
+                                            <span>Profit Margin</span>
+                                            <span className={`font-semibold ${
+                                                selectedAnalysis.financialMetrics?.profitMargin > 20 ? 'text-green-400' : 'text-yellow-400'
+                                            }`}>
+                                                {selectedAnalysis.financialMetrics?.profitMargin || '31.8'}%
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between items-center p-3 bg-slate-700/30 rounded">
+                                            <span>Cash Flow</span>
+                                            <span className={`font-semibold ${
+                                                selectedAnalysis.financialMetrics?.cashFlow === 'Positive' ? 'text-green-400' : 'text-red-400'
+                                            }`}>
+                                                {selectedAnalysis.financialMetrics?.cashFlow || 'Positive'}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between items-center p-3 bg-slate-700/30 rounded">
+                                            <span>Risk Level</span>
+                                            <span className={`font-semibold ${
+                                                selectedAnalysis.riskLevel === 'Low' ? 'text-green-400' :
+                                                selectedAnalysis.riskLevel === 'Medium' ? 'text-yellow-400' : 'text-red-400'
+                                            }`}>
+                                                {selectedAnalysis.riskLevel || 'Low'}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between items-center p-3 bg-slate-700/30 rounded">
+                                            <span>Processing Time</span>
+                                            <span className="text-blue-400 font-semibold">{selectedAnalysis.processingTime || '2.3s'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Risk Assessment */}
+                                <div className="lg:col-span-2 bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                                    <h3 className="text-xl font-semibold mb-4">⚠️ Risk Assessment</h3>
+                                    <div className="grid md:grid-cols-2 gap-4">
+                                        <div className="bg-green-500/10 border border-green-500/30 p-4 rounded-lg">
+                                            <h4 className="font-semibold text-green-400 mb-2">Low Risk Areas</h4>
+                                            <ul className="text-sm space-y-1">
+                                                <li>• Revenue recognition practices</li>
+                                                <li>• Cash management procedures</li>
+                                                <li>• Audit trail completeness</li>
+                                                <li>• Tax compliance status</li>
+                                            </ul>
+                                        </div>
+                                        <div className="bg-yellow-500/10 border border-yellow-500/30 p-4 rounded-lg">
+                                            <h4 className="font-semibold text-yellow-400 mb-2">Medium Risk Areas</h4>
+                                            <ul className="text-sm space-y-1">
+                                                <li>• Expense categorization</li>
+                                                <li>• Invoice processing delays</li>
+                                                <li>• Vendor payment terms</li>
+                                                <li>• Budget variance analysis</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* AI Insights */}
+                                <div className="lg:col-span-3 bg-gradient-to-r from-emerald-500/10 to-blue-500/10 p-6 rounded-xl border border-emerald-500/30">
+                                    <h3 className="text-xl font-semibold mb-4">🤖 AI Insights & Predictions</h3>
+                                    <div className="grid md:grid-cols-3 gap-6">
+                                        <div className="text-center">
+                                            <div className="text-3xl mb-2">📊</div>
+                                            <h4 className="font-semibold mb-2">Trend Analysis</h4>
+                                            <p className="text-sm text-gray-400">Revenue trending upward with seasonal patterns detected</p>
+                                        </div>
+                                        <div className="text-center">
+                                            <div className="text-3xl mb-2">🎯</div>
+                                            <h4 className="font-semibold mb-2">Optimization</h4>
+                                            <p className="text-sm text-gray-400">Potential 8% cost reduction identified in operational expenses</p>
+                                        </div>
+                                        <div className="text-center">
+                                            <div className="text-3xl mb-2">⚡</div>
+                                            <h4 className="font-semibold mb-2">Automation</h4>
+                                            <p className="text-sm text-gray-400">15 manual processes can be automated to improve efficiency</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
